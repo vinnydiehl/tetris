@@ -37,8 +37,8 @@ class TetrisGame
   end
 
   def render_current_tetromino
-    current_tetromino_iterate do |mino, x, y|
-      render_mino x, y, *@current_tetromino[:color] if mino && y < MATRIX_HEIGHT
+    @current_tetromino.each_with_coords do |mino, x, y|
+      render_mino x, y, *@current_tetromino.color if mino && y < MATRIX_HEIGHT
     end
   end
 

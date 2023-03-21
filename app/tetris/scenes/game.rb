@@ -8,7 +8,7 @@ class TetrisGame
 
       # Setting this starts the lock down, which can no longer
       # be stopped even if you shift off the stack
-      @current_tetromino[:lock_down] = true if current_tetromino_colliding_y? && !locking_down?
+      @current_tetromino.lock_down = true if current_tetromino_colliding_y? && !locking_down?
 
       lock_down if locking_down?
     end
@@ -22,7 +22,7 @@ class TetrisGame
 
       if @current_tetromino && !current_tetromino_colliding_x?(direction) &&
          (@das_timeout == DAS || (@das_timeout < 0 && @as_frame_timer == 0))
-        @current_tetromino[:x] += direction == :left ? -1 : 1
+        @current_tetromino.x += direction == :left ? -1 : 1
 
         if locking_down?
           reset_lock_down_delay
@@ -54,7 +54,7 @@ class TetrisGame
 
       if kb_inputs.w || kb_inputs.up ||
          gp_inputs.directional_up || gp_inputs.a
-        @current_tetromino[:hard_dropped] = true
+        @current_tetromino.hard_dropped = true
       end
 
       calculate_gravity(@args.inputs.down)

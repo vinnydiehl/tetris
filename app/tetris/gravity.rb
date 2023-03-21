@@ -26,7 +26,7 @@ class TetrisGame
     original = @gravity
 
     # Soft drop if down input, otherwise use G value based on level
-    @gravity = @current_tetromino[:hard_dropped] ? 20 :
+    @gravity = @current_tetromino.hard_dropped ? 20 :
       soft_drop_input ? SOFT_DROP_G : GRAVITY_VALUES[[@level, 15].min]
 
     # If the gravity has changed this frame, need to reset the gravity/age
@@ -41,8 +41,8 @@ class TetrisGame
   # surpasses the delay, we need to keep dropping the tetromino until we can catch it up.
   #
   def apply_gravity
-    while @current_tetromino[:age] > @current_tetromino[:gravity_delay]
-      @current_tetromino[:y] -= 1
+    while @current_tetromino.age > @current_tetromino.gravity_delay
+      @current_tetromino.y -= 1
 
       # If you move downward, the lockdown delay AND # of extensions are reset
       reset_lock_down_delay(true)
@@ -56,15 +56,15 @@ class TetrisGame
       # drop rate of roughly 1/sec at 60FPS. At 1G, this will bump the delay by only 1 frame,
       # causing a 60 Hz drop. Essentially, the higher the gravity, the slower the delay
       # catches up to the age, causing the tetromino to drop more cells in that frame.
-      @current_tetromino[:gravity_delay] += 1 / @gravity
+      @current_tetromino.gravity_delay += 1 / @gravity
     end
 
-    @current_tetromino[:age] += 1 if @current_tetromino
+    @current_tetromino.age += 1 if @current_tetromino
   end
 
   # Resets the gravity delay according to the currently set gravity, or a custom
   # gravity that may be passed in.
   def reset_gravity_delay(gravity=nil)
-    @current_tetromino[:gravity_delay] = @current_tetromino[:age] + (1 / (gravity || @gravity))
+    @current_tetromino.gravity_delay = @current_tetromino.age + (1 / (gravity || @gravity))
   end
 end
