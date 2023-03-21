@@ -170,10 +170,12 @@ class TetrisGame
   # The random generator is fairly simple: shuffle the pieces and put them in a "bag",
   # draw them in order, then reshuffle when the bag is empty. We keep the bag size > 7
   # so that the queue (next 7 pieces, visible) is always filled up
-  def spawn_tetromino
+  #
+  # @param tetromino [Tetromino] optional tetromino to spawn instead of using the bag
+  def spawn_tetromino(tetromino=nil)
     @bag.concat SHAPES.map { |s| Tetromino.new s }.shuffle if @bag.size < 8
 
-    @current_tetromino = @bag.shift
+    @current_tetromino = tetromino || @bag.shift
 
     reset_gravity_delay GRAVITY_VALUES[@level]
   end
@@ -215,5 +217,19 @@ class TetrisGame
     @current_tetromino.any? do |mino, x, y|
       mino && (y <= 0 || @matrix[x][y - 1])
     end
+  end
+
+  def hold_current_tetromino
+    hold_shape = @current_tetromino.shape.clone
+
+    if @held_tetromino
+      spawn_tetromino @held_tetromino
+      @held_tetromino = Tetromino.new(SHAPES.find { |s| s[:shape] == hold_shape })
+    else
+      @held_tetromino = Tetromino.new(SHAPES.find { |s| s[:shape] == hold_shape })
+      spawn_tetromino
+    end
+
+    @hold_available = false
   end
 end

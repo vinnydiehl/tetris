@@ -14,6 +14,8 @@ class TetrisGame
     @as_frame_timer = 0
 
     @bag = []
+    @held_tetromino = nil
+    @hold_available = true
 
     @delayed_procs = []
 

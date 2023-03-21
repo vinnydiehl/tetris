@@ -27,3 +27,6 @@ MATRIX_HEIGHT = 20
 
 # Opacity of the ghost (0-255)
 GHOST_ALPHA = 80
+
+# Opacity of the held piece before it is made available (0-255)
+UNAVAILABLE_HOLD_ALPHA = 50

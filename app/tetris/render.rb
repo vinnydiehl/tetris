@@ -11,6 +11,7 @@ class TetrisGame
     end
 
     render_queue
+    render_held if @held_tetromino
 
     # render_score
   end
@@ -24,24 +25,26 @@ class TetrisGame
     color = [255, 255, 255]
 
     # Horizontal lines
-    (-1..MATRIX_WIDTH + 7).each do |i|
-      render_mino i, -1, *color
-      render_mino i, MATRIX_HEIGHT, *color
+    (-8..MATRIX_WIDTH + 7).each do |x|
+      render_mino x, -1, *color
+      render_mino x, MATRIX_HEIGHT, *color
     end
 
     # Vertical lines
-    (-1..MATRIX_HEIGHT).each do |i|
-      render_mino -1, i, *color
-      render_mino MATRIX_WIDTH, i, *color
-      render_mino MATRIX_WIDTH + 8, i, *color
+    (-1..MATRIX_HEIGHT).each do |y|
+      # Edges of matrix
+      render_mino -1, y, *color
+      render_mino MATRIX_WIDTH, y, *color
+
+      # Far edges
+      render_mino MATRIX_WIDTH + 8, y, *color
+      render_mino -9, y, *color
     end
 
-    (MATRIX_WIDTH..MATRIX_WIDTH + 7).each do |i|
-      render_mino i, 15, *color
+    # Separators beneath next up/held pieces
+    [-8..-1, (MATRIX_WIDTH..MATRIX_WIDTH + 7)].each do |range|
+      range.each { |x| render_mino x, 15, *color }
     end
-
-    # Separator between next up and rest of queue
-
   end
 
   # Render a single "mino" (one square of a tetromino).
@@ -114,6 +117,24 @@ class TetrisGame
 
       tetromino.each_with_coords(13 + o_push, (11 + o_push) - (3 * i)) do |mino, x, y|
         render_mino x, y, *tetromino.color, 255, 28, 4 + three_wide_push, 10 + i_push if mino
+      end
+    end
+  end
+
+  def render_held
+    # As with the queue rendering, adjustments to line things up:
+
+    # O pieces need a push 1 space to the right and 1 space up
+    o_push = @held_tetromino.shape == :o ? 1 : 0
+    # I pieces need to move 1/2 space down
+    i_push = @held_tetromino.shape == :i ? MINO_SIZE / -2 : 0
+    # The rest need to move 1/2 space right
+    three_wide_push = %i[l j t s z].include?(@held_tetromino.shape) ? MINO_SIZE / 2 : 0
+
+    @held_tetromino.each_with_coords(- 6 + o_push, 16 + o_push) do |mino, x, y|
+      if mino
+        render_mino x, y, *@held_tetromino.color, @hold_available ? 255 : UNAVAILABLE_HOLD_ALPHA,
+                    MINO_SIZE, -16 + three_wide_push, 2 + i_push
       end
     end
   end
