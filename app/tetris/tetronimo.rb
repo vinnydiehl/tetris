@@ -8,7 +8,7 @@ SHAPES = [
   {
     shape: :i,
     minos: [[nil, nil, 1, nil]] * 4,
-    color: [0, 100, 100]
+    color: [0, 200, 200]
   },
   #   1   nil nil
   #   1   1   1
@@ -60,8 +60,8 @@ SHAPES = [
 ]
 
 class Tetromino
-  attr_reader *%i[shape color]
-  attr_accessor *%i[minos x y rotation age gravity_delay lock_down
+  attr_reader :shape
+  attr_accessor *%i[minos color x y rotation age gravity_delay lock_down
                     lock_down_timeout lock_down_extensions hard_dropped]
 
   def initialize(shape)
@@ -123,6 +123,22 @@ class Tetromino
         block.call mino, @x + x, @y + y
       end
     end
+  end
+
+  # @return a deep copy of this tetromino
+  def clone
+    copy = self.class.new({
+      shape: @shape,
+      minos: @minos.map(&:clone),
+      color: @color.clone
+    })
+
+    %i[@x @y @rotation @age @gravity_delay @lock_down
+       @lock_down_timeout @lock_down_extensions @hard_dropped].each do |attr|
+      copy.instance_variable_set(attr, instance_variable_get(attr))
+    end
+
+    copy
   end
 end
 

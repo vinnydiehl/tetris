@@ -36,16 +36,35 @@ class TetrisGame
     end
   end
 
-  def render_current_tetromino
-    @current_tetromino.each_with_coords do |mino, x, y|
-      render_mino x, y, *@current_tetromino.color if mino && y < MATRIX_HEIGHT
+  def render_tetromino(tetromino)
+    tetromino.each_with_coords do |mino, x, y|
+      render_mino x, y, *tetromino.color if mino && y < MATRIX_HEIGHT
     end
+  end
+
+  def render_ghost
+    ghost = @current_tetromino.clone
+
+    # Add alpha channel
+    ghost.color << GHOST_ALPHA
+
+    # Drop it until it hits something
+    until ghost.any? { |mino, x, y| mino && (y - 1 < 0 || @matrix[x][y - 1]) }
+      ghost.y -= 1
+    end
+
+    render_tetromino ghost
   end
 
   def render
     render_background
     render_matrix
-    render_current_tetromino if @current_tetromino
+
+    if @current_tetromino
+      render_ghost
+      render_tetromino @current_tetromino
+    end
+
     # render_score
   end
 end

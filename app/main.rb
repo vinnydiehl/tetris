@@ -7,5 +7,3 @@ def tick(args)
   args.state.game ||= TetrisGame.new(args)
   args.state.game.tick
 end
-
-$gtk.reset

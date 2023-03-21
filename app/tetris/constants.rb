@@ -23,3 +23,6 @@ MINO_SIZE = 30
 # Block size of the matrix
 MATRIX_WIDTH = 10
 MATRIX_HEIGHT = 20
+
+# Opacity of the ghost (0-255)
+GHOST_ALPHA = 80

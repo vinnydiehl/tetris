@@ -18,7 +18,7 @@ class TetrisGame
 
     # SRS Wall kicks try 5 different translations, if any succeed, it places
     # the tetromino. We'll create a simulated tetromino to try them out
-    sim_tetromino = @current_tetromino.dup
+    sim_tetromino = @current_tetromino.clone
 
     # All of the shapes are represented as square 2D arrays (2x2, 3x3, or 4x4)
     # which are rotated directly around their centers.
@@ -45,9 +45,6 @@ class TetrisGame
     end
 
     if success
-      # @current_tetromino.minos = sim_tetromino.minos
-      # @current_tetromino.x = sim_tetromino.x
-      # @current_tetromino.y = sim_tetromino.y
       @current_tetromino = sim_tetromino
 
       # Cycle between 0..3
