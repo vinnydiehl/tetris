@@ -45,6 +45,12 @@ class TetrisGame
     end
 
     if success
+      # If the piece has gained height, disable the extension reset so
+      # player can't keep climbing infinitely
+      if sim_tetromino.lowest_y > @current_tetromino.lowest_y
+        sim_tetromino.disable_extension_reset
+      end
+
       @current_tetromino = sim_tetromino
 
       # Cycle between 0..3

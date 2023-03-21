@@ -27,6 +27,8 @@ class TetrisGame
   # @param reset_extensions [Boolean] whether or not to reset the delay extension counter
   def reset_lock_down_delay(reset_extensions=false)
     @current_tetromino.lock_down_timeout = LOCK_DOWN_DELAY
-    @current_tetromino.lock_down_extensions = reset_extensions ? 0 : @current_tetromino.lock_down_extensions + 1
+    @current_tetromino.lock_down_extensions =
+      reset_extensions && @current_tetromino.extension_reset_allowed? ?
+        0 : @current_tetromino.lock_down_extensions + 1
   end
 end

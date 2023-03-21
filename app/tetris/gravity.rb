@@ -44,7 +44,8 @@ class TetrisGame
     while @current_tetromino.age > @current_tetromino.gravity_delay
       @current_tetromino.y -= 1
 
-      # If you move downward, the lockdown delay AND # of extensions are reset
+      # If you move downward, the lockdown delay AND # of
+      # extensions are reset (if allowed)
       reset_lock_down_delay(true)
 
       if current_tetromino_colliding_y?

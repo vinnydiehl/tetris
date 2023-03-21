@@ -77,6 +77,7 @@ class Tetromino
     @lock_down = false
     @lock_down_timeout = LOCK_DOWN_DELAY
     @lock_down_extensions = 0
+    @extension_reset_allowed = true
 
     @hard_dropped = false
   end
@@ -125,6 +126,26 @@ class Tetromino
     end
   end
 
+  # This determines whether or not the piece is allowed to reset its delay
+  # extensions upon moving downward. Once a piece is rotated such that its
+  # lowest point moves upward, this flag is disabled for the remainder of
+  # the tetromino's time in play.
+  def extension_reset_allowed?
+    @extension_reset_allowed
+  end
+
+  # Disable the extension reset as discussed above
+  def disable_extension_reset
+    @extension_reset_allowed = false
+  end
+
+  # @return the lowest y-coordinate on the matrix that the tetromino occupies
+  def lowest_y
+    ys = []
+    each_with_coords { |mino, _, y| ys << y if mino }
+    ys.min
+  end
+
   # @return a deep copy of this tetromino
   def clone
     copy = self.class.new({
@@ -133,7 +154,7 @@ class Tetromino
       color: @color.clone
     })
 
-    %i[@x @y @rotation @age @gravity_delay @lock_down
+    %i[@x @y @rotation @age @gravity_delay @lock_down @extension_reset_allowed
        @lock_down_timeout @lock_down_extensions @hard_dropped].each do |attr|
       copy.instance_variable_set(attr, instance_variable_get(attr))
     end
