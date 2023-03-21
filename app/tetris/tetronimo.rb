@@ -33,7 +33,8 @@ class TetrisGame
       rotation: 0,
       age: 0,
       lock_down_timeout: LOCK_DOWN_DELAY,
-      lock_down_extensions: 0
+      lock_down_extensions: 0,
+      hard_dropped: false
     })
 
     reset_gravity_delay GRAVITY_VALUES[@level]
