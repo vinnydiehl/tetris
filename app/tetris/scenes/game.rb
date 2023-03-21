@@ -17,10 +17,12 @@ class TetrisGame
   end
 
   def handle_input
-    if @args.inputs.left && !@args.inputs.right
-      if @current_tetromino && !current_tetromino_colliding_x?(:left) &&
+    if @args.inputs.left != @args.inputs.right
+      direction = @args.inputs.left ? :left : :right
+
+      if @current_tetromino && !current_tetromino_colliding_x?(direction) &&
          (@das_timeout == DAS || (@das_timeout < 0 && @as_frame_timer == 0))
-        @current_tetromino[:x] -= 1
+        @current_tetromino[:x] += direction == :left ? -1 : 1
 
         if locking_down?
           reset_lock_down_delay
@@ -28,28 +30,20 @@ class TetrisGame
         end
       end
 
-      @das_timeout -= 1
-
-      if @das_timeout < 0
-        @as_frame_timer = (@as_frame_timer - 1) % 3
-      end
-    elsif @args.inputs.right && !@args.inputs.left
-      if @current_tetromino && !current_tetromino_colliding_x?(:right) &&
-         (@das_timeout == DAS || (@das_timeout < 0 && @as_frame_timer == 0))
-        @current_tetromino[:x] += 1
-
-        if locking_down?
-          reset_lock_down_delay
-          reset_gravity_delay
-        end
+      # Check if direction has changed
+      if @last_direction != direction
+        @das_timeout = DAS
+        @as_frame_timer = 0
       end
 
+      @last_direction = direction
       @das_timeout -= 1
 
       if @das_timeout < 0
         @as_frame_timer = (@as_frame_timer - 1) % 3
       end
     else
+      @last_direction = nil
       @das_timeout = DAS
       @as_frame_timer = 0
     end
