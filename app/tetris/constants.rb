@@ -19,6 +19,7 @@ MAX_LOCK_DOWN_ADJUSTMENTS = 15
 # Size in pixels of each mino. This sets the scale for the entire matrix
 # display and its border.
 MINO_SIZE = 30
+QUEUE_MINO_SIZE = 28
 
 # Block size of the matrix
 MATRIX_WIDTH = 10

@@ -99,10 +99,13 @@ class Tetromino
   #   nil nil 1
   #   1   1   1
   #   nil nil nil
-  def each_with_coords(&block)
+  #
+  # @param in_x [Integer] optional custom x coordinate
+  # @param in_y [Integer] optional custom y coordinate
+  def each_with_coords(in_x=@x, in_y=@y, &block)
     @minos.each_with_index do |col, x|
       col.each_with_index do |mino, y|
-        block.call mino, @x + x, @y + y
+        block.call mino, in_x + x, in_y + y
       end
     end
   end
