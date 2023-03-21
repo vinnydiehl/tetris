@@ -1,0 +1,7 @@
+# Remove the pound sign and leading space for the properties below before publishing your game.
+devid=vinnydiehl
+devtitle=Vinny Diehl
+gameid=tetris
+gametitle=Tetris
+version=0.1
+icon=metadata/icon.png
