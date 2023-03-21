@@ -55,15 +55,21 @@ class TetrisGame
     end
 
     if @current_tetromino
-      calculate_gravity @args.inputs
+      kb_inputs = @args.inputs.keyboard.key_down
+      gp_inputs = @args.inputs.controller_one.key_down
 
-      key_down = @args.inputs.keyboard.key_down
+      if kb_inputs.w || kb_inputs.up ||
+         gp_inputs.directional_up || gp_inputs.a
+        @current_tetromino[:hard_dropped] = true
+      end
 
-      if key_down.space || key_down.e || @args.inputs.controller_one.key_down.r1
+      calculate_gravity(@args.inputs.down)
+
+      if kb_inputs.space || kb_inputs.e || gp_inputs.r1
         rotate_current_tetromino(:cw)
       end
 
-      if key_down.q || @args.inputs.controller_one.key_down.l1
+      if kb_inputs.q || gp_inputs.l1
         rotate_current_tetromino(:ccw)
       end
     end

@@ -3,16 +3,12 @@ class TetrisGame
     @current_tetromino[:gravity_delay] = @current_tetromino[:age] + (1 / (gravity || @gravity))
   end
 
-  def calculate_gravity(inputs)
+  def calculate_gravity(soft_drop_input)
     original = @gravity
-
-    if inputs.up || inputs.controller_one.a
-      @current_tetromino[:hard_dropped] = true
-    end
 
     # Soft drop if down input, otherwise use G value based on level
     @gravity = @current_tetromino[:hard_dropped] ? 20 :
-      inputs.down ? SOFT_DROP_G : GRAVITY_VALUES[[@level, 15].min]
+      soft_drop_input ? SOFT_DROP_G : GRAVITY_VALUES[[@level, 15].min]
 
     # If the gravity has changed this frame, need to reset the gravity/age
     # delay to the correct interval
