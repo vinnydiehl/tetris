@@ -42,8 +42,14 @@ class TetrisGame
       if @t_spin || @lines_cleared_this_frame == 4
         points *= 1.5 if @back_to_back > 0
         @back_to_back += 1
+
+        if @back_to_back > @highest_streak
+          @highest_streak = @back_to_back
+          @new_best_set = true
+        end
       else
         @back_to_back = 0
+        @new_best_set = false
       end
 
       @score += (points * @level).floor

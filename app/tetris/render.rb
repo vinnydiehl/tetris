@@ -204,8 +204,21 @@ class TetrisGame
       @args.outputs.labels << {
         text: "Streak: #{@back_to_back}",
         x: 355,
-        y: 115,
+        y: @highest_streak > 0 ? 145 : 115,
         size_enum: 4,
+        alignment_enum: 1,
+        r: 255,
+        g: 255,
+        b: 255
+      }
+    end
+
+    if @highest_streak > 0
+      @args.outputs.labels << {
+        text: @new_best_set ? "New Best!" : "Best Streak: #{@highest_streak}",
+        x: 355,
+        y: 105,
+        size_enum: 1,
         alignment_enum: 1,
         r: 255,
         g: 255,

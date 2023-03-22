@@ -7,7 +7,10 @@ class TetrisGame
     @score = 0
     @lines_cleared = 0
     @lines_cleared_this_frame = 0
+
     @back_to_back = 0
+    @highest_streak = 0
+    @new_best_set = false
 
     # This will indicate whether a T-Spin (and what type,
     # :full or :mini) was scored this turn
