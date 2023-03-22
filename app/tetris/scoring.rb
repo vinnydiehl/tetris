@@ -1,26 +1,30 @@
 class TetrisGame
-  def clear_lines
-    @lines_cleared_this_frame = 0
+  def count_line_clears
+    @lines_cleared_this_frame = MATRIX_HEIGHT.times.count do |y|
+      @matrix.all? { |col| col[y] }
+    end
 
+    # This method runs asynchronously to the score handling; there
+    # are a few frames where the score will have been applied, the
+    # lines are still in the process of clearing, and they will be
+    # counted for that frame. This lock prevents those points
+    # from being counted again, and once the lines are back to 0
+    # we remove the lock:
+    @score_applied = false if @lines_cleared_this_frame == 0
+  end
+
+  def clear_lines
     MATRIX_HEIGHT.times do |y|
       if @matrix.all? { |col| col[y] }
-        @lines_cleared_this_frame += 1
-
-        # Delete the line
-        @matrix.each { |col| col[y] = nil }
-
-        # Shift everything above it downward
         @matrix.each do |col|
-          (y..MATRIX_HEIGHT-1).each do |y|
-            col[y] = col[y + 1]
-          end
+          col.delete_at y
         end
       end
     end
   end
 
   def handle_scoring
-    if @lines_cleared_this_frame > 0 || @t_spin
+    if !@score_applied && (@lines_cleared_this_frame > 0 || @t_spin)
       points =
         @t_spin == :full && @lines_cleared_this_frame == 3 ? 1600 :
         @t_spin == :full && @lines_cleared_this_frame == 2 ? 1200 :
@@ -31,7 +35,16 @@ class TetrisGame
         @lines_cleared_this_frame == 2 ? 300 :
         @t_spin == :mini && @lines_cleared_this_frame == 1 ? 200 : 100
 
-      points *= 1.5 if @back_to_back_active
+      @args.state.lines_cleared_this_frame =  [@args.state.lines_cleared_this_frame || 0, @lines_cleared_this_frame].max
+
+      # Process back-to-back bonus. A single, double, or triple
+      # line clear will end a back-to-back streak
+      if @t_spin || @lines_cleared_this_frame == 4
+        points *= 1.5 if @back_to_back > 0
+        @back_to_back += 1
+      else
+        @back_to_back = 0
+      end
 
       @score += (points * @level).floor
       @lines_cleared += (points / 100).floor
@@ -43,12 +56,13 @@ class TetrisGame
       @level = (1..Float::INFINITY).lazy.map { |i| (i * (i + 1) / 2) * 5 }.
         take_while { |lines| lines <= @lines_cleared }.count + 1
 
-      # Only a single, double, or triple line clear will end a back-to-back streak
-      @back_to_back_active = @t_spin || @lines_cleared_this_frame == 4
-
       # Reset these
       @lines_cleared_this_frame = 0
       @t_spin = nil
+
+      # Lock to prevent the same score event from being counted
+      # multiple frames in a row
+      @score_applied = true
     end
   end
 end

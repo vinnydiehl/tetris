@@ -180,7 +180,13 @@ class TetrisGame
   #
   # @param tetromino [Tetromino] optional tetromino to spawn instead of using the bag
   def spawn_tetromino(tetromino=nil)
-    @bag.concat SHAPES.map { |s| Tetromino.new s }.shuffle if @bag.size < 8
+    # Make sure the bag is full every time we spawn
+    if !tetromino && @bag.size < 8
+      # Use this for debugging; change the index to get only that shape
+      # @bag.concat ([SHAPES[0]] * 7).map { |s| Tetromino.new s }.shuffle
+
+      @bag.concat SHAPES.map { |s| Tetromino.new s }.shuffle
+    end
 
     @current_tetromino = tetromino || @bag.shift
 

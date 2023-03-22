@@ -169,5 +169,17 @@ class TetrisGame
       g: 255,
       b: 255
     }
+
+    if @back_to_back > 0
+      @args.outputs.labels << {
+        text: "Streak: #{@back_to_back}",
+        x: 275,
+        y: 325,
+        size_enum: 4,
+        r: 255,
+        g: 255,
+        b: 255
+      }
+    end
   end
 end

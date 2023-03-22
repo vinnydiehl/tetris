@@ -13,6 +13,7 @@ class TetrisGame
       lock_down if locking_down?
     end
 
+    count_line_clears
     clear_lines
     handle_scoring
   end
