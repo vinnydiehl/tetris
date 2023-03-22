@@ -19,6 +19,13 @@ class TetrisGame
         @matrix.each do |col|
           col.delete_at y
         end
+
+        # Every time a line is cleared, check for an All Clear and
+        # apply the bonus if achieved
+        if @matrix.all? { |col| col.none? }
+          @score += 400
+          @lines_cleared += 4
+        end
       end
     end
   end
@@ -34,8 +41,6 @@ class TetrisGame
         @t_spin == :full ? 400 :
         @lines_cleared_this_frame == 2 ? 300 :
         @t_spin == :mini && @lines_cleared_this_frame == 1 ? 200 : 100
-
-      @args.state.lines_cleared_this_frame =  [@args.state.lines_cleared_this_frame || 0, @lines_cleared_this_frame].max
 
       # Process back-to-back bonus. A single, double, or triple
       # line clear will end a back-to-back streak
