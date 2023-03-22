@@ -1,5 +1,7 @@
 class TetrisGame
   def game_tick
+    @timer += 1
+
     handle_delayed_procs
     handle_input
 

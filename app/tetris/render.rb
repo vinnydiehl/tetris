@@ -140,46 +140,86 @@ class TetrisGame
   end
 
   def render_score
-    @args.outputs.labels << {
-      text: "Score: #{@score}",
-      x: 275,
-      y: 475,
-      size_enum: 4,
-      r: 255,
-      g: 255,
-      b: 255
-    }
+    minutes_elapsed = @timer / 60 / 60
 
-    @args.outputs.labels << {
-      text: "Lines: #{@lines_cleared}",
-      x: 275,
-      y: 425,
-      size_enum: 4,
-      r: 255,
-      g: 255,
-      b: 255
-    }
-
-    @args.outputs.labels << {
-      text: "Level: #{@level}",
-      x: 275,
-      y: 375,
-      size_enum: 4,
-      r: 255,
-      g: 255,
-      b: 255
-    }
-
-    if @back_to_back > 0
-      @args.outputs.labels << {
-        text: "Streak: #{@back_to_back}",
-        x: 275,
-        y: 325,
+    @args.outputs.labels << [
+      {
+        text: time_elapsed,
+        x: 355,
+        y: 490,
+        size_enum: 4,
+        alignment_enum: 1,
+        r: 255,
+        g: 255,
+        b: 255
+      },
+      {
+        text: "Score: #{@score}",
+        x: 268,
+        y: 440,
+        size_enum: 4,
+        r: 255,
+        g: 255,
+        b: 255
+      },
+      {
+        text: "Lines: #{@lines_cleared}",
+        x: 268,
+        y: 390,
+        size_enum: 4,
+        r: 255,
+        g: 255,
+        b: 255
+      },
+      {
+        text: "Level: #{@level}",
+        x: 268,
+        y: 340,
+        size_enum: 4,
+        r: 255,
+        g: 255,
+        b: 255
+      },
+      {
+        text: "SPM: #{(@score / minutes_elapsed).floor}",
+        x: 268,
+        y: 290,
+        size_enum: 4,
+        r: 255,
+        g: 255,
+        b: 255
+      },
+      {
+        text: "LPM: #{@lines_cleared.zero? ? "0" : "%.02f" % (@lines_cleared / minutes_elapsed)}",
+        x: 268,
+        y: 240,
         size_enum: 4,
         r: 255,
         g: 255,
         b: 255
       }
+    ]
+
+    if @back_to_back > 0
+      @args.outputs.labels << {
+        text: "Streak: #{@back_to_back}",
+        x: 355,
+        y: 115,
+        size_enum: 4,
+        alignment_enum: 1,
+        r: 255,
+        g: 255,
+        b: 255
+      }
     end
+  end
+
+  def time_elapsed
+    seconds = @timer / FPS
+    minutes, seconds = seconds.divmod(60)
+    hours, minutes = minutes.divmod(60)
+    milliseconds = (@timer % FPS) * 1000 / FPS
+
+    "#{hours > 0 ? "%.2d:" % hours : ""}#{"%.2d" % minutes}:#{"%.2d" % seconds}.#{"%.3d" % milliseconds}"
   end
 end

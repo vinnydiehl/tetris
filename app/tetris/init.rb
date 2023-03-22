@@ -2,6 +2,7 @@ class TetrisGame
   def initialize(args)
     @args = args
 
+    @timer = 0
     @level = 1
     @score = 0
     @lines_cleared = 0
