@@ -4,7 +4,12 @@ class TetrisGame
 
     @level = 1
     @score = 0
-    @gameover = false
+    @lines_cleared = 0
+    @back_to_back_active = false
+
+    # This will indicate whether a T-Spin (and what type,
+    # :full or :mini) was scored this turn
+    @t_spin = nil
 
     @gravity = GRAVITY_VALUES[1]
 

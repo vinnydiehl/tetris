@@ -19,15 +19,15 @@ GRAVITY_VALUES = [
   2.36
 ]
 
-SOFT_DROP_G = 0.5
-
 class TetrisGame
   def calculate_gravity(soft_drop_input)
     original = @gravity
 
+    level_gravity = GRAVITY_VALUES[[@level, 15].min]
+
     # Soft drop if down input, otherwise use G value based on level
     @gravity = @current_tetromino.hard_dropped ? 20 :
-      soft_drop_input ? SOFT_DROP_G : GRAVITY_VALUES[[@level, 15].min]
+      @current_tetromino.soft_dropping ? level_gravity * 20 : level_gravity
 
     # If the gravity has changed this frame, need to reset the gravity/age
     # delay to the correct interval
@@ -43,6 +43,10 @@ class TetrisGame
   def apply_gravity
     while @current_tetromino.age > @current_tetromino.gravity_delay
       @current_tetromino.y -= 1
+      @current_tetromino.last_movement = :gravity
+
+      @score += @current_tetromino.hard_dropped ? 2 :
+               @current_tetromino.soft_dropping ? 1 : 0
 
       # If you move downward, the lockdown delay AND # of
       # extensions are reset (if allowed)

@@ -61,8 +61,9 @@ SHAPES = [
 
 class Tetromino
   attr_reader :shape
-  attr_accessor *%i[minos color x y rotation age gravity_delay lock_down
-                    lock_down_timeout lock_down_extensions hard_dropped]
+  attr_accessor *%i[minos color x y rotation age gravity_delay
+                    lock_down last_movement lock_down_timeout
+                    lock_down_extensions hard_dropped soft_dropping]
 
   def initialize(shape)
     @shape, @minos, @color = shape.values_at(:shape, :minos, :color)
@@ -70,6 +71,10 @@ class Tetromino
     @x = 5 - (@minos.size / 2).ceil
     @y = 21 - @minos.first.size
     @rotation = 0
+
+    # This is recorded for the purpose of recognizing T-Spins; it will
+    # be set to either :gravity or the kick test used to rotate the piece
+    @last_movement = nil
 
     @age = 0
     @gravity_delay = 0
@@ -80,6 +85,7 @@ class Tetromino
     @extension_reset_allowed = true
 
     @hard_dropped = false
+    @soft_dropping = false
   end
 
   # Many methods involve iterating over each mino of a tetromino to perform
@@ -157,8 +163,9 @@ class Tetromino
       color: @color.clone
     })
 
-    %i[@x @y @rotation @age @gravity_delay @lock_down @extension_reset_allowed
-       @lock_down_timeout @lock_down_extensions @hard_dropped].each do |attr|
+    %i[@x @y @rotation @age @gravity_delay @lock_down
+       @extension_reset_allowed @last_movement @lock_down_timeout
+       @lock_down_extensions @hard_dropped @soft_dropping].each do |attr|
       copy.instance_variable_set(attr, instance_variable_get(attr))
     end
 

@@ -13,7 +13,7 @@ class TetrisGame
     render_queue
     render_held if @held_tetromino
 
-    # render_score
+    render_score
   end
 
   def render_background
@@ -137,5 +137,37 @@ class TetrisGame
                     MINO_SIZE, -16 + three_wide_push, 2 + i_push
       end
     end
+  end
+
+  def render_score
+    @args.outputs.labels << {
+      text: "Score: #{@score}",
+      x: 275,
+      y: 475,
+      size_enum: 4,
+      r: 255,
+      g: 255,
+      b: 255
+    }
+
+    @args.outputs.labels << {
+      text: "Lines: #{@lines_cleared}",
+      x: 275,
+      y: 425,
+      size_enum: 4,
+      r: 255,
+      g: 255,
+      b: 255
+    }
+
+    @args.outputs.labels << {
+      text: "Level: #{@level}",
+      x: 275,
+      y: 375,
+      size_enum: 4,
+      r: 255,
+      g: 255,
+      b: 255
+    }
   end
 end

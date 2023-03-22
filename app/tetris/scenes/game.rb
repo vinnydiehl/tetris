@@ -14,6 +14,7 @@ class TetrisGame
     end
 
     clear_lines
+    handle_scoring
   end
 
   def handle_input
@@ -59,6 +60,8 @@ class TetrisGame
            gp_inputs.directional_up || gp_inputs.a
           @current_tetromino.hard_dropped = true
         end
+
+        @current_tetromino.soft_dropping = @args.inputs.down ? true : false
 
         calculate_gravity(@args.inputs.down)
 

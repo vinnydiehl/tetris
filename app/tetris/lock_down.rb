@@ -10,6 +10,8 @@ class TetrisGame
 
     if ((@current_tetromino.lock_down_timeout <= 0 || @current_tetromino.hard_dropped) && current_tetromino_colliding_y?) ||
        (@current_tetromino.lock_down_extensions >= MAX_LOCK_DOWN_ADJUSTMENTS && (current_tetromino_colliding_x?(:left, :right) || current_tetromino_colliding_y?))
+      check_t_spin
+
       # Make current tetromino part of the matrix
       @current_tetromino.each_with_coords do |mino, x, y|
         @matrix[x][y] = @current_tetromino.color if mino
@@ -33,5 +35,46 @@ class TetrisGame
     @current_tetromino.lock_down_extensions =
       reset_extensions && @current_tetromino.extension_reset_allowed? ?
         0 : @current_tetromino.lock_down_extensions + 1
+  end
+
+  def check_t_spin
+    if @current_tetromino.shape == :t && @current_tetromino.last_movement.is_a?(Integer)
+      # Points a, b, c, and d are oriented thusly around the T tetromino:
+      #
+      #    a   1   b
+      #    1   1   1
+      #    c   nil d
+      #
+      # They rotate with the tetromino. This table uses the rotation index to
+      # get the offset from [@current_tetromino.x][@current_tetromino.y] to
+      # one of those points:
+      a = [[0, 2], [2, 2], [2, 0], [0, 0]][@current_tetromino.rotation]
+      b = [[2, 2], [2, 0], [0, 0], [0, 2]][@current_tetromino.rotation]
+      c = [[0, 0], [0, 2], [2, 2], [2, 0]][@current_tetromino.rotation]
+      d = [[2, 0], [0, 0], [0, 2], [2, 2]][@current_tetromino.rotation]
+
+      # Check if the flat side is against a wall; if so, c and d are filled
+      against_wall =
+        (@current_tetromino.rotation == 0 && @current_tetromino.y == -1) ||
+        (@current_tetromino.rotation == 1 && @current_tetromino.x == -1) ||
+        (@current_tetromino.rotation == 3 && @current_tetromino.x + c.x >= MATRIX_WIDTH)
+
+      # Check these spots against the matrix and the walls (a and b can't be wall-adjacent)
+      a_filled = @matrix[@current_tetromino.x + a.x][@current_tetromino.y + a.y]
+      b_filled = @matrix[@current_tetromino.x + b.x][@current_tetromino.y + b.y]
+      c_filled = against_wall || @matrix[@current_tetromino.x + c.x][@current_tetromino.y + c.y]
+      d_filled = against_wall || @matrix[@current_tetromino.x + d.x][@current_tetromino.y + d.y]
+
+      # Conditions are as follows (Mini T-Spin is more lenient)
+      t_spin_condition = (a_filled && b_filled) && (c_filled || d_filled)
+      mini_t_spin_condition = (a_filled || b_filled) && (c_filled && d_filled)
+
+      # If the mini conditions are met with a kick test of 5, however, it counts as a full
+      if (t_spin_condition || (mini_t_spin_condition && @current_tetromino.last_movement == 5))
+        @t_spin = :full
+      elsif mini_t_spin_condition
+        @t_spin = :mini
+      end
+    end
   end
 end

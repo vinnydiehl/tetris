@@ -32,7 +32,11 @@ class TetrisGame
     i = direction == :cw ? sim_tetromino.rotation : (sim_tetromino.rotation - 1) % 4
     sign = direction == :cw ? 1 : -1
 
-    success = kick_tests[i].any? do |translation|
+    last_test_tried = 0
+
+    success = kick_tests[i].each_with_index.any? do |translation, kick_test_i|
+      last_test_tried = kick_test_i
+
       # Translate it (from the point where it originated, the x and y of @current_tetromino)
       sim_tetromino.x = @current_tetromino.x + translation.x * sign
       sim_tetromino.y = @current_tetromino.y + translation.y * sign
@@ -55,6 +59,7 @@ class TetrisGame
 
       # Cycle between 0..3
       @current_tetromino.rotation = (@current_tetromino.rotation + sign) % 4
+      @current_tetromino.last_movement = last_test_tried
 
       reset_lock_down_delay
     end
