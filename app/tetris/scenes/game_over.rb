@@ -1,10 +1,14 @@
 class TetrisGame
   def game_over_init
-    # read high score data
+    @input_timeout = 60
+
+    # TODO: high score data
   end
 
   def game_over_tick
-    if @args.inputs.keyboard.key_down.space || @args.inputs.controller_one.a
+    @input_timeout -= 1
+    if @input_timeout < 0 &&
+       (@args.inputs.keyboard.key_down.space || @args.inputs.controller_one.a)
       set_scene :game
     end
 
