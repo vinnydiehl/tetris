@@ -1,37 +1,20 @@
 class TetrisGame
-  def count_line_clears
-    @lines_cleared_this_frame = MATRIX_HEIGHT.times.count do |y|
-      @matrix.all? { |col| col[y] }
-    end
-
-    # This method runs asynchronously to the score handling; there
-    # are a few frames where the score will have been applied, the
-    # lines are still in the process of clearing, and they will be
-    # counted for that frame. This lock prevents those points
-    # from being counted again, and once the lines are back to 0
-    # we remove the lock:
-    @score_applied = false if @lines_cleared_this_frame == 0
-  end
-
   def clear_lines
-    MATRIX_HEIGHT.times do |y|
+    @lines_cleared_this_frame = 0
+
+    MATRIX_HEIGHT.times.reverse_each do |y|
       if @matrix.all? { |col| col[y] }
+        @lines_cleared_this_frame += 1
+
         @matrix.each do |col|
           col.delete_at y
-        end
-
-        # Every time a line is cleared, check for an All Clear and
-        # apply the bonus if achieved
-        if @matrix.all? { |col| col.none? }
-          @score += 400
-          @lines_cleared += 4
         end
       end
     end
   end
 
   def handle_scoring
-    if !@score_applied && (@lines_cleared_this_frame > 0 || @t_spin)
+    if @lines_cleared_this_frame > 0 || @t_spin
       points =
         @t_spin == :full && @lines_cleared_this_frame == 3 ? 1600 :
         @t_spin == :full && @lines_cleared_this_frame == 2 ? 1200 :
@@ -41,6 +24,11 @@ class TetrisGame
         @t_spin == :full ? 400 :
         @lines_cleared_this_frame == 2 ? 300 :
         @t_spin == :mini && @lines_cleared_this_frame == 1 ? 200 : 100
+
+      # All Clear bonus
+      if @matrix.all? { |col| col.none? }
+        points += 400
+      end
 
       # Process back-to-back bonus. A single, double, or triple
       # line clear will end a back-to-back streak
@@ -70,10 +58,6 @@ class TetrisGame
       # Reset these
       @lines_cleared_this_frame = 0
       @t_spin = nil
-
-      # Lock to prevent the same score event from being counted
-      # multiple frames in a row
-      @score_applied = true
     end
   end
 end
