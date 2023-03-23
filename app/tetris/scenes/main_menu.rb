@@ -1,6 +1,6 @@
 class TetrisGame
   def main_menu_tick
-    if @args.inputs.keyboard.key_down.space
+    if @args.inputs.keyboard.key_down.space || @args.inputs.controller_one.a
       start_game
       @scene = :game
     end

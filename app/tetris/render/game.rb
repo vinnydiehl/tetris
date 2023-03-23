@@ -57,7 +57,16 @@ class TetrisGame
     matrix_x = (1280 - (MATRIX_WIDTH * size)) / 2
     matrix_y = (720 - (MATRIX_HEIGHT * size)) / 2
 
-    @args.outputs.solids << [matrix_x + (x * size) + x_translate, matrix_y + (y * size) + y_translate, size, size, r, g, b, a]
+    @args.outputs.solids << {
+      x: matrix_x + (x * size) + x_translate,
+      y: matrix_y + (y * size) + y_translate,
+      w: size,
+      h: size,
+      r: r,
+      g: g,
+      b: b,
+      a: a
+    }
   end
 
   def render_matrix
