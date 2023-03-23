@@ -46,16 +46,27 @@ class TetrisGame
       end
 
       @score += (points * @level).floor
-      @lines_cleared += (points / 100).floor
+      @lines += (points / 100).floor
 
       # This formula starts it at 5 lines to increment to level 2,
       # then 10 more lines to increment to level 3, then 15, then
       # 20; 5 is added to the increment each time. Level 15 is reached
       # at 600 lines.
       @level = (1..Float::INFINITY).lazy.map { |i| (i * (i + 1) / 2) * 5 }.
-        take_while { |lines| lines <= @lines_cleared }.count + 1
+        take_while { |lines| lines <= @lines }.count + 1
 
-      # Reset these
+      # Note that @lines_cleared_this_frame was never directly added to @lines,
+      # instead being processed along with the score. We do need to save some
+      # more data before we get rid of it:
+      @actual_lines_cleared += @lines_cleared_this_frame
+
+      if @lines_cleared_this_frame == 4
+        @tetris_lines += 4
+      elsif !@t_spin
+        @burnt_lines += @lines_cleared_this_frame
+      end
+
+      # Reset everything for next frame
       @lines_cleared_this_frame = 0
       @t_spin = nil
     end

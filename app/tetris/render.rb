@@ -157,16 +157,16 @@ class TetrisGame
         text: "Score: #{@score}",
         x: 268,
         y: 440,
-        size_enum: 4,
+        size_enum: 2,
         r: 255,
         g: 255,
         b: 255
       },
       {
-        text: "Lines: #{@lines_cleared}",
+        text: "Lines: #{@lines}",
         x: 268,
-        y: 390,
-        size_enum: 4,
+        y: 400,
+        size_enum: 2,
         r: 255,
         g: 255,
         b: 255
@@ -174,8 +174,8 @@ class TetrisGame
       {
         text: "Level: #{@level}",
         x: 268,
-        y: 340,
-        size_enum: 4,
+        y: 360,
+        size_enum: 2,
         r: 255,
         g: 255,
         b: 255
@@ -183,22 +183,43 @@ class TetrisGame
       {
         text: "SPM: #{(@score / minutes_elapsed).floor}",
         x: 268,
-        y: 290,
-        size_enum: 4,
+        y: 320,
+        size_enum: 2,
         r: 255,
         g: 255,
         b: 255
       },
       {
-        text: "LPM: #{@lines_cleared.zero? ? "0" : "%.02f" % (@lines_cleared / minutes_elapsed)}",
+        text: "LPM: #{@lines.zero? ? "0" : "%.02f" % (@lines / minutes_elapsed)}",
+        x: 268,
+        y: 280,
+        size_enum: 2,
+        r: 255,
+        g: 255,
+        b: 255
+      },
+      {
+        text: "BRN: #{@burnt_lines}",
         x: 268,
         y: 240,
-        size_enum: 4,
+        size_enum: 2,
         r: 255,
         g: 255,
         b: 255
       }
     ]
+
+    if @tetris_lines > 0
+      @args.outputs.labels << {
+        text: "TRT: #{format_percent(@tetris_lines / @actual_lines_cleared * 100)}",
+        x: 268,
+        y: 200,
+        size_enum: 2,
+        r: 255,
+        g: 255,
+        b: 255
+      }
+    end
 
     if @back_to_back > 0
       @args.outputs.labels << {
@@ -234,5 +255,13 @@ class TetrisGame
     milliseconds = (@timer % FPS) * 1000 / FPS
 
     "#{hours > 0 ? "%.2d:" % hours : ""}#{"%.2d" % minutes}:#{"%.2d" % seconds}.#{"%.3d" % milliseconds}"
+  end
+
+  def format_percent(number)
+    str = "%.2f" % number
+    2.times { str.chop! if str[-1] == "0" }
+    str.chop! if str[-1] == "."
+
+    str + "%"
   end
 end

@@ -5,7 +5,13 @@ class TetrisGame
     @timer = 0
     @level = 1
     @score = 0
-    @lines_cleared = 0
+    @lines = 0
+
+    # @lines does not refer to the actual amount of lines cleared; they may be
+    # awarded as bonuses. This is the actual amount cleared, for statistics purposes
+    @actual_lines_cleared = 0
+    @tetris_lines = 0
+    @burnt_lines = 0
 
     @back_to_back = 0
     @highest_streak = 0
