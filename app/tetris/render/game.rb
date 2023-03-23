@@ -1,8 +1,8 @@
 class TetrisGame
-  # Rendering main loop. This is called every frame and dispatches to
-  # the various rendering subroutines defined here.
-  def render
+  def render_game
     render_background
+
+    render_border
     render_matrix
 
     if @current_tetromino
@@ -16,12 +16,7 @@ class TetrisGame
     render_score
   end
 
-  def render_background
-    # Black background
-    @args.outputs.solids << [0, 0, 1280, 720, 0, 0, 0]
-
-    # Border
-
+  def render_border
     color = [255, 255, 255]
 
     # Horizontal lines
