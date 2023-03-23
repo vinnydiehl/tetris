@@ -32,9 +32,14 @@ class TetrisGame
   # @param reset_extensions [Boolean] whether or not to reset the delay extension counter
   def reset_lock_down_delay(reset_extensions=false)
     @current_tetromino.lock_down_timeout = LOCK_DOWN_DELAY
-    @current_tetromino.lock_down_extensions =
-      reset_extensions && @current_tetromino.extension_reset_allowed? ?
-        0 : @current_tetromino.lock_down_extensions + 1
+
+    if reset_extensions
+      # Moving downward also resets the extensions, but this is disallowed if the
+      # tetromino has rotated such that it has moved upwards in the grid.
+      @current_tetromino.lock_down_extensions = 0 if @current_tetromino.extension_reset_allowed?
+    else
+      @current_tetromino.lock_down_extensions += 1
+    end
   end
 
   def check_t_spin
