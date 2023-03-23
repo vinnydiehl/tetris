@@ -144,8 +144,6 @@ class TetrisGame
   end
 
   def render_score
-    minutes_elapsed = @timer / 60 / 60
-
     @args.outputs.labels << [
       {
         text: time_elapsed,
@@ -185,7 +183,7 @@ class TetrisGame
         b: 255
       },
       {
-        text: "SPM: #{(@score / minutes_elapsed).floor}",
+        text: "SPM: #{score_per_minute}",
         x: 268,
         y: 320,
         size_enum: 2,
@@ -194,7 +192,7 @@ class TetrisGame
         b: 255
       },
       {
-        text: "LPM: #{@lines.zero? ? "0" : "%.02f" % (@lines / minutes_elapsed)}",
+        text: "LPM: #{lines_per_minute}",
         x: 268,
         y: 280,
         size_enum: 2,
@@ -215,7 +213,7 @@ class TetrisGame
 
     if @tetris_lines > 0
       @args.outputs.labels << {
-        text: "TRT: #{format_percent(@tetris_lines / @actual_lines_cleared * 100)}",
+        text: "TRT: #{tetris_rate}",
         x: 268,
         y: 200,
         size_enum: 2,
@@ -250,22 +248,5 @@ class TetrisGame
         b: 255
       }
     end
-  end
-
-  def time_elapsed
-    seconds = @timer / FPS
-    minutes, seconds = seconds.divmod(60)
-    hours, minutes = minutes.divmod(60)
-    milliseconds = (@timer % FPS) * 1000 / FPS
-
-    "#{hours > 0 ? "%.2d:" % hours : ""}#{"%.2d" % minutes}:#{"%.2d" % seconds}.#{"%.3d" % milliseconds}"
-  end
-
-  def format_percent(number)
-    str = "%.2f" % number
-    2.times { str.chop! if str[-1] == "0" }
-    str.chop! if str[-1] == "."
-
-    str + "%"
   end
 end

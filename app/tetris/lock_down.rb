@@ -10,6 +10,9 @@ class TetrisGame
 
     if ((@current_tetromino.lock_down_timeout <= 0 || @current_tetromino.hard_dropped) && current_tetromino_colliding_y?) ||
        (@current_tetromino.lock_down_extensions >= MAX_LOCK_DOWN_ADJUSTMENTS && (current_tetromino_colliding_x?(:left, :right) || current_tetromino_colliding_y?))
+      # Game over if you lock out above the grid
+      set_scene :game_over if @current_tetromino.all? { |mino, _, y| mino ? y >= MATRIX_HEIGHT  : true }
+
       check_t_spin
 
       # Make current tetromino part of the matrix
@@ -77,8 +80,10 @@ class TetrisGame
       # If the mini conditions are met with a kick test of 5, however, it counts as a full
       if (t_spin_condition || (mini_t_spin_condition && @current_tetromino.last_movement == 5))
         @t_spin = :full
+        @t_spins_scored += 1
       elsif mini_t_spin_condition
         @t_spin = :mini
+        @mini_t_spins_scored += 1
       end
     end
   end

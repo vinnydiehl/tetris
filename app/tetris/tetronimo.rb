@@ -127,6 +127,15 @@ class Tetromino
   end
 
   # See #each_with_coords and #any?
+  def all?(&block)
+    @minos.each_with_index.all? do |col, x|
+      col.each_with_index.all? do |mino, y|
+        block.call mino, @x + x, @y + y
+      end
+    end
+  end
+
+  # See #each_with_coords and #any?
   def none?(&block)
     @minos.each_with_index.all? do |col, x|
       col.each_with_index.none? do |mino, y|
@@ -189,6 +198,8 @@ class TetrisGame
     end
 
     @current_tetromino = tetromino || @bag.shift
+
+    set_scene :game_over if @current_tetromino.any? { |mino, x, y| mino && @matrix[x][y] }
 
     reset_gravity_delay GRAVITY_VALUES[@level]
   end

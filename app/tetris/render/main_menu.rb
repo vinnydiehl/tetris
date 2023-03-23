@@ -1,12 +1,10 @@
-PADDING = 120
-
 class TetrisGame
   def render_main_menu
     render_background
 
     @args.outputs.labels << [
       {
-        text: "welcome. relax.",
+        text: "relax. take a deep breath.",
         x: PADDING,
         y: @args.grid.h - PADDING,
         size_enum: 20,
