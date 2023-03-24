@@ -56,12 +56,9 @@ class TetrisGame
   end
 
   def handle_input
-    kb_inputs = @args.inputs.keyboard.key_down
-    gp_inputs = @args.inputs.controller_one.key_down
-
-    if kb_inputs.escape || gp_inputs.start
-      # #set_scene would delete any buffered procs like piece spawns
-      @scene = :pause
+    if inputs_any? kb: %i[escape], c1: :start
+      set_scene :pause, false
+      return
     end
 
     if @args.inputs.left != @args.inputs.right
@@ -96,11 +93,10 @@ class TetrisGame
     end
 
     if @current_tetromino
-      if @hold_available && (kb_inputs.space || gp_inputs.x || gp_inputs.y)
+      if @hold_available && inputs_any?(kb: %i[shift c], c1: %i[x y])
         hold_current_tetromino
       else
-        if kb_inputs.w || kb_inputs.up ||
-           gp_inputs.directional_up || gp_inputs.a
+        if inputs_any?(kb: :space, c1: %i[directional_up a])
           @current_tetromino.hard_dropped = true
         end
 
@@ -108,11 +104,11 @@ class TetrisGame
 
         calculate_gravity(@args.inputs.down)
 
-        if kb_inputs.e || gp_inputs.r1
+        if inputs_any? kb: %i[up x], c1: :r1
           rotate_current_tetromino(:cw)
         end
 
-        if kb_inputs.q || gp_inputs.l1
+        if inputs_any? kb: %i[control z], c1: :l1
           rotate_current_tetromino(:ccw)
         end
       end

@@ -1,10 +1,11 @@
 class TetrisGame
   def pause_tick
-    if @args.inputs.keyboard.key_down.space || @args.keyboard.key_down.escape ||
-       @args.inputs.controller_one.a || @args.inputs.controller_one.key_down.start
+    if inputs_any? kb: :c, c1: :y
+      set_scene :controls
+    elsif inputs_back?
       # Continue
-      @scene = :game
-    elsif @args.inputs.keyboard.key_down.enter || @args.inputs.controller_one.select
+      set_scene_back
+    elsif inputs_any? kb: :enter, c1: :select
       # Restart
       set_scene :game
     end

@@ -1,7 +1,7 @@
-SCENES = %w[main_menu pause game game_over]
+SCENES = %w[main_menu pause controls game game_over]
 
-%w[constants init delay gravity lock_down
-   rotation scoring tetronimo].each { |f| require "app/tetris/#{f}.rb" }
+%w[constants init inputs delay gravity
+   lock_down rotation scoring tetronimo].each { |f| require "app/tetris/#{f}.rb" }
 
 require "app/tetris/render/shared.rb"
 
@@ -11,3 +11,4 @@ def tick(args)
   args.state.game ||= TetrisGame.new(args)
   args.state.game.tick
 end
+
