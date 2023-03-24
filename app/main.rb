@@ -1,4 +1,4 @@
-SCENES = %w[main_menu game game_over]
+SCENES = %w[main_menu pause game game_over]
 
 %w[constants init delay gravity lock_down
    rotation scoring tetronimo].each { |f| require "app/tetris/#{f}.rb" }

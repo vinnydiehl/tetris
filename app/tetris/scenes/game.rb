@@ -53,11 +53,17 @@ class TetrisGame
 
     clear_lines
     handle_scoring
-
-    render_game
   end
 
   def handle_input
+    kb_inputs = @args.inputs.keyboard.key_down
+    gp_inputs = @args.inputs.controller_one.key_down
+
+    if kb_inputs.escape || gp_inputs.start
+      # #set_scene would delete any buffered procs like piece spawns
+      @scene = :pause
+    end
+
     if @args.inputs.left != @args.inputs.right
       direction = @args.inputs.left ? :left : :right
 
@@ -90,9 +96,6 @@ class TetrisGame
     end
 
     if @current_tetromino
-      kb_inputs = @args.inputs.keyboard.key_down
-      gp_inputs = @args.inputs.controller_one.key_down
-
       if @hold_available && (kb_inputs.space || gp_inputs.x || gp_inputs.y)
         hold_current_tetromino
       else

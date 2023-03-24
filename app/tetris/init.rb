@@ -5,7 +5,12 @@ class TetrisGame
   end
 
   def tick
-    send "#{@scene}_tick"
+    # Save this so that even if the scene changes during the tick, it is
+    # still rendered before switching scenes.
+    scene = @scene
+
+    send "#{scene}_tick"
+    send "render_#{scene}"
   end
 
   def set_scene(scene)

@@ -11,7 +11,5 @@ class TetrisGame
        (@args.inputs.keyboard.key_down.space || @args.inputs.controller_one.a)
       set_scene :game
     end
-
-    render_game_over
   end
 end
