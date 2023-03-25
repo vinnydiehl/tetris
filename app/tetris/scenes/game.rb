@@ -68,6 +68,8 @@ class TetrisGame
 
       if @current_tetromino && !current_tetromino_colliding_x?(direction) &&
          (@das_timeout == DAS || (@das_timeout < 0 && @as_frame_timer == 0))
+        play_sound_effect "tetromino/move"
+
         @current_tetromino.x += direction == :left ? -1 : 1
 
         if locking_down?
@@ -95,8 +97,13 @@ class TetrisGame
     end
 
     if @current_tetromino
-      if @hold_available && inputs_any?(kb: %i[shift c], c1: %i[x y])
-        hold_current_tetromino
+      if inputs_any?(kb: %i[shift c], c1: %i[x y])
+        if @hold_available
+          play_sound_effect "tetromino/hold#{@held_tetromino ? '' : '_initial'}"
+          hold_current_tetromino
+        else
+          play_sound_effect "tetromino/hold_fail"
+        end
       else
         if inputs_any?(kb: :space, c1: %i[directional_up a])
           @current_tetromino.hard_dropped = true
@@ -107,10 +114,12 @@ class TetrisGame
         calculate_gravity(@args.inputs.down)
 
         if inputs_any? kb: %i[up x], c1: :r1
+          play_sound_effect "tetromino/rotate"
           rotate_current_tetromino(:cw)
         end
 
         if inputs_any? kb: %i[control z], c1: :l1
+          play_sound_effect "tetromino/rotate"
           rotate_current_tetromino(:ccw)
         end
       end

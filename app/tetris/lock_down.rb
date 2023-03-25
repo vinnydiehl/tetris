@@ -13,6 +13,8 @@ class TetrisGame
       # Game over if you lock out above the grid
       set_scene :game_over if @current_tetromino.all? { |mino, _, y| mino ? y >= MATRIX_HEIGHT  : true }
 
+      play_sound_effect "tetromino/#{@current_tetromino.hard_dropped ? 'hard_drop' : 'lock'}"
+
       check_t_spin
 
       # Make current tetromino part of the matrix

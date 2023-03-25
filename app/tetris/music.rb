@@ -25,4 +25,8 @@ class TetrisGame
     @volume = percent / 100
     @args.audio[:music][:gain] = @volume
   end
+
+  def play_sound_effect(file)
+    @args.outputs.sounds << "sounds/effects/#{file}.wav"
+  end
 end

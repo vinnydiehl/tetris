@@ -39,9 +39,10 @@ class TetrisGame
   # starts at 0, and gravity_delay, which starts at some about (lower gravity = higher
   # delay), and the delay strives to always remain ahead of the age. If the age
   # surpasses the delay, we need to keep dropping the tetromino until we can catch it up.
-  #
   def apply_gravity
     while @current_tetromino.age > @current_tetromino.gravity_delay
+      play_sound_effect "tetromino/soft_drop" if @current_tetromino.soft_dropping
+
       @current_tetromino.y -= 1
       @current_tetromino.last_movement = :gravity
 
