@@ -1,5 +1,7 @@
 class TetrisGame
   def game_init
+    set_music "game_intro", "game_loop"
+
     @timer = 0
     @level = 1
     @score = 0

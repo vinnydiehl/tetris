@@ -1,6 +1,6 @@
 SCENES = %w[main_menu pause controls game game_over]
 
-%w[constants init inputs delay gravity
+%w[constants init inputs music delay gravity
    lock_down rotation scoring tetronimo].each { |f| require "app/tetris/#{f}.rb" }
 
 require "app/tetris/render/shared.rb"

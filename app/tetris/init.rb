@@ -1,6 +1,9 @@
 class TetrisGame
   def initialize(args)
     @args = args
+
+    @volume = 0
+
     @scene_stack = []
     set_scene :main_menu
   end
@@ -8,6 +11,8 @@ class TetrisGame
   def tick
     @kb_inputs = @args.inputs.keyboard.key_down
     @c1_inputs = @args.inputs.controller_one.key_down
+
+    music_tick
 
     # Save this so that even if the scene changes during the tick, it is
     # still rendered before switching scenes.
