@@ -14,6 +14,8 @@ class TetrisGame
     render_held if @held_tetromino
 
     render_score
+
+    animation_tick
   end
 
   def render_border

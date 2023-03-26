@@ -2,6 +2,13 @@ class TetrisGame
   def game_init
     set_music "game_intro", "game_loop"
 
+    init_animations
+
+    # At the start of the game there is a "Ready, Go" animation; during this time
+    # they can move the piece left and right, but that's it; it will not fall, and
+    # the timer is not running.
+    @game_started = false
+
     @timer = 0
     @level = 1
     @score = 0
@@ -38,12 +45,12 @@ class TetrisGame
   end
 
   def game_tick
-    @timer += 1
+    @timer += 1 if @game_started
 
     handle_delayed_procs
     handle_input
 
-    if @current_tetromino
+    if @current_tetromino && @game_started
       apply_gravity unless current_tetromino_colliding_y?
 
       # Setting this starts the lock down, which can no longer
@@ -97,7 +104,7 @@ class TetrisGame
     end
 
     if @current_tetromino
-      if inputs_any?(kb: %i[shift c], c1: %i[x y])
+      if inputs_any?(kb: %i[shift c], c1: %i[x y]) && @game_started
         if @hold_available
           play_sound_effect "tetromino/hold#{@held_tetromino ? '' : '_initial'}"
           hold_current_tetromino
@@ -105,7 +112,7 @@ class TetrisGame
           play_sound_effect "tetromino/hold_fail"
         end
       else
-        if inputs_any?(kb: :space, c1: %i[directional_up a])
+        if inputs_any?(kb: :space, c1: %i[directional_up a]) && @game_started
           @current_tetromino.hard_dropped = true
         end
 
