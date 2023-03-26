@@ -17,28 +17,28 @@ class TetrisGame
   end
 
   def render_border
-    color = [255, 255, 255]
+    color = [150, 150, 150]
 
     # Horizontal lines
     (-8..MATRIX_WIDTH + 7).each do |x|
-      render_mino x, -1, *color
-      render_mino x, MATRIX_HEIGHT, *color
+      render_mino x, -1, *color, border: false
+      render_mino x, MATRIX_HEIGHT, *color, border: false
     end
 
     # Vertical lines
     (-1..MATRIX_HEIGHT).each do |y|
       # Edges of matrix
-      render_mino -1, y, *color
-      render_mino MATRIX_WIDTH, y, *color
+      render_mino -1, y, *color, border: false
+      render_mino MATRIX_WIDTH, y, *color, border: false
 
       # Far edges
-      render_mino MATRIX_WIDTH + 8, y, *color
-      render_mino -9, y, *color
+      render_mino MATRIX_WIDTH + 8, y, *color, border: false
+      render_mino -9, y, *color, border: false
     end
 
     # Separators beneath next up/held pieces
     [-8..-1, (MATRIX_WIDTH..MATRIX_WIDTH + 7)].each do |range|
-      range.each { |x| render_mino x, 15, *color }
+      range.each { |x| render_mino x, 15, *color, border: false }
     end
   end
 
@@ -50,23 +50,43 @@ class TetrisGame
   # @param g [Integer] RGBa green component, 0-255
   # @param b [Integer] RGBa blue component, 0-255
   # @param a [Integer] RGBa alpha component, 0-255
-  # @param size [Integer] custom size in pixels
-  # @param x_translate [Integer] custom x translation in pixels
-  # @param y_translate [Integer] custom y translation in pixels
-  def render_mino(x, y, r, g, b, a=255, size=MINO_SIZE, x_translate=0, y_translate=0)
-    matrix_x = (1280 - (MATRIX_WIDTH * size)) / 2
-    matrix_y = (720 - (MATRIX_HEIGHT * size)) / 2
+  #
+  # @param options [Hash] additional options
+  # @option options [Integer] :size custom size in pixels
+  # @option options [Integer] :x_translate custom x translation in pixels
+  # @option options [Integer] :y_translate custom y translation in pixels
+  # @option options [Boolean] :border whether or not to display a black border
+  def render_mino(x, y, r, g, b, a=255, **options)
+    [[:size, MINO_SIZE],
+     [:x_translate, 0],
+     [:y_translate, 0]].each { |option, default| options[option] ||= default }
+
+    matrix_x = (1280 - (MATRIX_WIDTH * options[:size])) / 2
+    matrix_y = (720 - (MATRIX_HEIGHT * options[:size])) / 2
 
     @args.outputs.solids << {
-      x: matrix_x + (x * size) + x_translate,
-      y: matrix_y + (y * size) + y_translate,
-      w: size,
-      h: size,
+      x: matrix_x + (x * options[:size]) + options[:x_translate],
+      y: matrix_y + (y * options[:size]) + options[:y_translate],
+      w: options[:size],
+      h: options[:size],
       r: r,
       g: g,
       b: b,
       a: a
     }
+
+    # We can't set this with `||= true` up top, obviously. Not that I tried...
+    unless options[:border] == false
+      @args.outputs.borders << {
+        x: matrix_x + (x * options[:size]) + options[:x_translate],
+        y: matrix_y + (y * options[:size]) + options[:y_translate],
+        w: options[:size],
+        h: options[:size],
+        r: 0,
+        g: 0,
+        b: 0
+      }
+    end
   end
 
   def render_matrix
@@ -110,7 +130,9 @@ class TetrisGame
     three_wide_push = %i[l j t s z].include?(next_up.shape) ? MINO_SIZE / 2 : 0
 
     next_up.each_with_coords(12 + o_push, 16 + o_push) do |mino, x, y|
-      render_mino x, y, *next_up.color, 255, MINO_SIZE, 12 + three_wide_push, 2 + i_push if mino
+      if mino
+        render_mino x, y, *next_up.color, x_translate: 12 + three_wide_push, y_translate: 2 + i_push
+      end
     end
 
     @bag[1..5].each_with_index do |tetromino, i|
@@ -120,7 +142,9 @@ class TetrisGame
       three_wide_push = %i[l j t s z].include?(tetromino.shape) ? QUEUE_MINO_SIZE / 2 : 0
 
       tetromino.each_with_coords(13 + o_push, (11 + o_push) - (3 * i)) do |mino, x, y|
-        render_mino x, y, *tetromino.color, 255, 28, 4 + three_wide_push, 10 + i_push if mino
+        if mino
+          render_mino x, y, *tetromino.color, size: 28, x_translate: 4 + three_wide_push, y_translate: 10 + i_push
+        end
       end
     end
   end
@@ -138,7 +162,7 @@ class TetrisGame
     @held_tetromino.each_with_coords(- 6 + o_push, 16 + o_push) do |mino, x, y|
       if mino
         render_mino x, y, *@held_tetromino.color, @hold_available ? 255 : UNAVAILABLE_HOLD_ALPHA,
-                    MINO_SIZE, -16 + three_wide_push, 2 + i_push
+                    x_translate: -16 + three_wide_push, y_translate: 2 + i_push
       end
     end
   end
