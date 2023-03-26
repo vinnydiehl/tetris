@@ -2,26 +2,24 @@ class TetrisGame
   # Runs once on game start, called from #game_init
   def init_animations
     @animation = nil
-    @ready_go_animating = true
-    @ready_go_state = nil
+    @countdown_animating = true
+    @countdown_state = "Ready"
   end
 
   def animation_tick
-    animate_ready_go if @ready_go_animating
+    animate_countdown if @countdown_animating
   end
 
-  def animate_ready_go
-    unless @ready_go_state
-      play_sound_effect "events/ready"
-    end
-
-    @ready_go_state ||= "Ready"
-
+  def animate_countdown
     @animation ||= Enumerator.new do |yielder|
+      play_sound_effect "events/#{
+        %w[3 2 1].include?(@countdown_state) ? "count" : @countdown_state.downcase
+      }"
+
       attrs = {
-        text: @ready_go_state,
+        text: @countdown_state,
         x: @args.grid.w / 2,
-        y: @args.grid.h / 2,
+        y: @args.grid.h / 2 + 25,
         size_enum: 4,
         alignment_enum: 1,
         r: 255,
@@ -30,9 +28,11 @@ class TetrisGame
       }
 
       yielder.run(
+        # Fade in
         eease(1.seconds, Bezier.ease(0.67, 0.62, 0.55, 1.00)) do |t|
           @args.outputs.labels << { a: t.lerp(0, 255), **attrs }
         end +
+        # Fade out
         eease(0.5.seconds, Bezier.ease(0.15, 0.94, 0.71, 0.94)) do |t|
           @args.outputs.labels << { a: t.lerp(255, 0), **attrs }
         end
@@ -42,14 +42,17 @@ class TetrisGame
     begin
       @animation.next
     rescue StopIteration
-      if @ready_go_state == "Ready"
+      @countdown_state = case @countdown_state
+      when "Ready" then "3"
+      when   "3"   then "2"
+      when   "2"   then "1"
+      when   "1"
         # Delay syncs perfectly with the sound effect and fade-in
         delay 20 { @game_started = true }
-        play_sound_effect "events/go"
-        @ready_go_state = "Go"
+        "Go"
       else
-        @ready_go_state = nil
-        @ready_go_animating = false
+        @countdown_animating = false
+        nil
       end
 
       @animation = nil
