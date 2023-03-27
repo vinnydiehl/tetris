@@ -3,6 +3,7 @@ class TetrisGame
     set_music "game_intro", "game_loop"
 
     init_animations
+    begin_animation :countdown
 
     # At the start of the game there is a "Ready, Go" animation; during this time
     # they can move the piece left and right, but that's it; it will not fall, and

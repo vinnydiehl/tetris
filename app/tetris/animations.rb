@@ -1,17 +1,47 @@
 class TetrisGame
   # Runs once on game start, called from #game_init
   def init_animations
-    @animation = nil
-    @countdown_animating = true
+    # This hash contains all currently running animations. They are looped
+    # through, advanced and rendered every tick.
+    @animations = {}
+
     @countdown_state = "Ready"
   end
 
+  # To begin an animation from the game, all you need to do is run this method
+  # once, on the frame that the animation begins. The animation will play out
+  # from there and end itself, or you can end it early with `#end_animation`.
+  #
+  # There needs to be a method in this file `#animate_NAME` (replace NAME) with
+  # the +name+ passed into this method. That method will then run every tick
+  # until end_animation(NAME) is called. Its animation state is initialized at
+  # nil and saved at @animations[NAME].
+  #
+  # @param name [Symbol] name of the animation
+  def begin_animation(name)
+    @animations[name] = nil
+  end
+
+  # Ends an animation; this animation code runs fairly late in the game loop so
+  # if this is called from the game the animation will not play that frame.
+  #
+  # @param name [Symbol] name of the animation
+  def end_animation(name)
+    @animations.delete name
+  end
+
+  # @param name [Symbol] name of the animation
+  # @return [Boolean] whether or not the animation is currently running
+  def animating?(name)
+    @animations.keys.include? name
+  end
+
   def animation_tick
-    animate_countdown if @countdown_animating
+    @animations.each { |name, _| send "animate_#{name}" }
   end
 
   def animate_countdown
-    @animation ||= Enumerator.new do |yielder|
+    @animations[:countdown] ||= Enumerator.new do |animator|
       play_sound_effect "events/#{
         %w[3 2 1].include?(@countdown_state) ? "count" : @countdown_state.downcase
       }"
@@ -27,7 +57,7 @@ class TetrisGame
         b: 255,
       }
 
-      yielder.run(
+      animator.run(
         # Fade in
         eease(1.seconds, Bezier.ease(0.67, 0.62, 0.55, 1.00)) do |t|
           @args.outputs.labels << { a: t.lerp(0, 255), **attrs }
@@ -40,7 +70,7 @@ class TetrisGame
     end
 
     begin
-      @animation.next
+      @animations[:countdown].next
     rescue StopIteration
       @countdown_state = case @countdown_state
       when "Ready" then "3"
@@ -51,11 +81,11 @@ class TetrisGame
         delay 20 { @game_started = true }
         "Go"
       else
-        @countdown_animating = false
+        end_animation :countdown
         nil
       end
 
-      @animation = nil
+      @animations[:countdown] = nil if animating?(:countdown)
     end
   end
 end
