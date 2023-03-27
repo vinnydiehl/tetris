@@ -136,7 +136,8 @@ class TetrisGame
 
     next_up.each_with_coords(12 + o_push, 16 + o_push) do |mino, x, y|
       if mino
-        render_mino x, y, *next_up.color, x_translate: 12 + three_wide_push, y_translate: 2 + i_push
+        render_mino x, y, *next_up.color,
+                    x_translate: 12 + three_wide_push, y_translate: 2 + i_push
       end
     end
 
@@ -148,7 +149,8 @@ class TetrisGame
 
       tetromino.each_with_coords(13 + o_push, (11 + o_push) - (3 * i)) do |mino, x, y|
         if mino
-          render_mino x, y, *tetromino.color, size: 28, x_translate: 4 + three_wide_push, y_translate: 10 + i_push
+          render_mino x, y, *tetromino.color, size: QUEUE_MINO_SIZE,
+                      x_translate: 4 + three_wide_push, y_translate: 10 + i_push
         end
       end
     end
