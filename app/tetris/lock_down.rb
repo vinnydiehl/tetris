@@ -23,10 +23,6 @@ class TetrisGame
       end
 
       @current_tetromino = nil
-      delay SPAWN_DELAY do
-        spawn_tetromino
-        @hold_available = true
-      end
     end
   end
 

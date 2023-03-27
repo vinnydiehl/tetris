@@ -1,20 +1,25 @@
 class TetrisGame
-  def clear_lines
-    @lines_cleared_this_frame = 0
+  def check_line_clear
+    @lines_cleared_this_frame = []
 
-    MATRIX_HEIGHT.times.reverse_each do |y|
+    MATRIX_HEIGHT.times.each do |y|
       if @matrix.all? { |col| col[y] }
-        @lines_cleared_this_frame += 1
+        @lines_cleared_this_frame << y
 
-        @matrix.each do |col|
-          col.delete_at y
+        @matrix.each_with_index do |col, x|
+          @animation_matrix[x][y] = col[y]
+          col[y] = nil
         end
       end
+    end
+
+    if @lines_cleared_this_frame.size > 0 && !animating?(:line_clear)
+      begin_animation :line_clear
     end
   end
 
   def handle_scoring
-    if @lines_cleared_this_frame > 0 || @t_spin
+    if @lines_cleared_this_frame.size > 0 || @t_spin
       points, sound = {
         [:full, 3] => [1600, "t_spin_triple"],
         [:full, 2] => [1200, "t_spin_double"],
@@ -27,7 +32,7 @@ class TetrisGame
         [nil,   3] => [500,  "triple"],
         [nil,   2] => [300,  "double"],
         [nil,   1] => [100,  "single"]
-      }[[@t_spin, @lines_cleared_this_frame]]
+      }[[@t_spin, @lines_cleared_this_frame.size]]
 
       play_sound_effect "score/#{sound}"
 
@@ -39,7 +44,7 @@ class TetrisGame
 
       # Process back-to-back bonus. A single, double, or triple
       # line clear will end a back-to-back streak
-      if @t_spin || @lines_cleared_this_frame == 4
+      if @t_spin || @lines_cleared_this_frame.size == 4
         points *= 1.5 if @back_to_back > 0
         @back_to_back += 1
 
@@ -67,19 +72,18 @@ class TetrisGame
         delay 30 { play_sound_effect "score/level_up" }
       end
 
-      # Note that @lines_cleared_this_frame was never directly added to @lines,
+      # Note that @lines_cleared_this_frame.size was never directly added to @lines,
       # instead being processed along with the score. We do need to save some
       # more data before we get rid of it:
-      @actual_lines_cleared += @lines_cleared_this_frame
+      @actual_lines_cleared += @lines_cleared_this_frame.size
 
-      if @lines_cleared_this_frame == 4
+      if @lines_cleared_this_frame.size == 4
         @tetris_lines += 4
       elsif !@t_spin
-        @burnt_lines += @lines_cleared_this_frame
+        @burnt_lines += @lines_cleared_this_frame.size
       end
 
-      # Reset everything for next frame
-      @lines_cleared_this_frame = 0
+      # Reset this for next frame; @lines_cleared_this_frame is reset in the animation
       @t_spin = nil
     end
   end

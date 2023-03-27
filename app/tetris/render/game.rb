@@ -2,8 +2,7 @@ class TetrisGame
   def render_game
     render_background
 
-    render_border
-    render_matrix
+    render_matrix @matrix unless animating? :line_fall
 
     if @current_tetromino
       render_ghost
@@ -16,6 +15,8 @@ class TetrisGame
     render_score
 
     animation_tick
+
+    render_border
   end
 
   def render_border
@@ -66,7 +67,8 @@ class TetrisGame
     matrix_x = (1280 - (MATRIX_WIDTH * options[:size])) / 2
     matrix_y = (720 - (MATRIX_HEIGHT * options[:size])) / 2
 
-    @args.outputs.solids << {
+    @args.outputs.primitives << {
+      primitive_marker: :solid,
       x: matrix_x + (x * options[:size]) + options[:x_translate],
       y: matrix_y + (y * options[:size]) + options[:y_translate],
       w: options[:size],
@@ -79,7 +81,8 @@ class TetrisGame
 
     # We can't set this with `||= true` up top, obviously. Not that I tried...
     unless options[:border] == false
-      @args.outputs.borders << {
+      @args.outputs.primitives << {
+        primitive_marker: :border,
         x: matrix_x + (x * options[:size]) + options[:x_translate],
         y: matrix_y + (y * options[:size]) + options[:y_translate],
         w: options[:size],
@@ -91,8 +94,8 @@ class TetrisGame
     end
   end
 
-  def render_matrix
-    @matrix.each_with_index do |col, x|
+  def render_matrix(matrix)
+    matrix.each_with_index do |col, x|
       col.each_with_index do |color, y|
         render_mino x, y, *color if color && y < MATRIX_HEIGHT
       end

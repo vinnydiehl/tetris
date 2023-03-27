@@ -33,14 +33,13 @@ class TetrisGame
 
     @gravity = GRAVITY_VALUES[1]
 
-    @matrix = Array.new(MATRIX_WIDTH) { Array.new(MATRIX_HEIGHT, nil) }
+    @matrix = empty_matrix
 
     @das_timeout = DAS
     @as_frame_timer = 0
 
     @bag = []
     @held_tetromino = nil
-    @hold_available = true
 
     spawn_tetromino
   end
@@ -61,8 +60,14 @@ class TetrisGame
       lock_down if locking_down?
     end
 
-    clear_lines
+    check_line_clear
     handle_scoring
+
+    if !@current_tetromino && !@spawning &&
+       %i[line_clear line_fall].none? { |a| animating? a }
+      delay(SPAWN_DELAY) { spawn_tetromino }
+      @spawning = true
+    end
   end
 
   def handle_input
@@ -132,5 +137,10 @@ class TetrisGame
         end
       end
     end
+  end
+
+  # @return [Array<Array>] a 10x20 2D array full of nils
+  def empty_matrix
+    Array.new(MATRIX_WIDTH) { Array.new(MATRIX_HEIGHT, nil) }
   end
 end

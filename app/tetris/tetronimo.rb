@@ -202,6 +202,8 @@ class TetrisGame
     set_scene :game_over if @current_tetromino.any? { |mino, x, y| mino && @matrix[x][y] }
 
     reset_gravity_delay GRAVITY_VALUES[@level]
+    @hold_available = true
+    @spawning = false
   end
 
   # Checks if the current tetromino is colliding on either the `:left`,
