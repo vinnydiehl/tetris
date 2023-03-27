@@ -16,6 +16,7 @@ class TetrisGame
     elsif inputs_any? kb: :enter, c1: :select
       # Restart
       play_sound_effect "menus/action"
+      set_volume 100
       set_scene :game
     end
   end
