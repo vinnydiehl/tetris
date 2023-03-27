@@ -17,8 +17,21 @@ class TetrisGame
 
   # Handles volume setting and the looping behavior described for #set_music
   def music_tick
-    @args.audio[:music] ||= @music_buffer
-    @args.audio[:music][:gain] = @volume
+    if @args.audio[:music]
+      @args.audio[:music][:gain] = @volume
+
+      # Hack to get the intro to transition into the looping part smoothly. This was
+      # originally set as simply:
+      #
+      #   @args.audio[:music] ||= @music_buffer
+      #
+      # at the very beginning of this method, but it was causing a 1 frame delay which
+      # was quite noticeable. This switches the music over same-frame.
+      if !@args.audio[:music][:looping] &&
+         @args.audio[:music][:playtime] >= @args.audio[:music][:playtime]
+        @args.audio[:music] = @music_buffer
+      end
+    end
   end
 
   def set_volume(percent)
