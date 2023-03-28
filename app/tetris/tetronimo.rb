@@ -69,7 +69,7 @@ class Tetromino
     @shape, @minos, @color = shape.values_at(:shape, :minos, :color)
 
     @x = 5 - (@minos.size / 2).ceil
-    @y = 21 - @minos.first.size
+    @y = 22 - @minos.first.size
     @rotation = 0
 
     # This is recorded for the purpose of recognizing T-Spins; it will
@@ -202,6 +202,8 @@ class TetrisGame
     if @current_tetromino.any? { |mino, x, y| mino && @matrix[x][y] }
       begin_animation :game_over
     end
+
+    @current_tetromino.y -= 1 unless current_tetromino_colliding_y?
 
     reset_gravity_delay GRAVITY_VALUES[@level]
     @hold_available = true

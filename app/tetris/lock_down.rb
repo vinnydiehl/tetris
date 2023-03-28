@@ -15,7 +15,9 @@ class TetrisGame
         begin_animation :game_over
       end
 
-      play_sound_effect "tetromino/#{@current_tetromino.hard_dropped ? 'hard_drop' : 'lock'}"
+      unless @game_over
+        play_sound_effect "tetromino/#{@current_tetromino.hard_dropped ? 'hard_drop' : 'lock'}"
+      end
 
       check_t_spin
 

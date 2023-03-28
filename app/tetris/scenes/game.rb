@@ -54,7 +54,7 @@ class TetrisGame
     handle_delayed_procs
     handle_input
 
-    if @current_tetromino && @game_started
+    if @current_tetromino && @game_started && !@game_over
       apply_gravity unless current_tetromino_colliding_y?
 
       # Setting this starts the lock down, which can no longer
@@ -67,9 +67,9 @@ class TetrisGame
     check_line_clear
     handle_scoring
 
-    if !@current_tetromino && !@spawning && !@game_over &&
+    if !@current_tetromino && !@spawning &&
        %i[line_clear line_fall].none? { |a| animating? a }
-      delay(SPAWN_DELAY) { spawn_tetromino }
+      delay(SPAWN_DELAY) { spawn_tetromino unless @game_over }
       @spawning = true
     end
   end
