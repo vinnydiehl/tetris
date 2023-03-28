@@ -130,12 +130,12 @@ class TetrisGame
 
         calculate_gravity(@args.inputs.down)
 
-        if inputs_any? kb: %i[up x], c1: :r1
+        if inputs_any? kb: %i[up x], c1: %i[r1 r2]
           play_sound_effect "tetromino/rotate"
           rotate_current_tetromino(:cw)
         end
 
-        if inputs_any? kb: %i[control z], c1: :l1
+        if inputs_any? kb: %i[control z], c1: %i[l1 l2]
           play_sound_effect "tetromino/rotate"
           rotate_current_tetromino(:ccw)
         end
