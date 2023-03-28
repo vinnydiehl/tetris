@@ -1,6 +1,7 @@
 class TetrisGame
   def game_init
-    set_music "game_intro", "game_loop"
+    # This gets played at the end of the countdown animation
+    @args.audio[:music] = nil
 
     init_animations
     begin_animation :countdown

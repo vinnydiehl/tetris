@@ -123,6 +123,7 @@ class TetrisGame
       when   "1"
         # Delay syncs perfectly with the sound effect and fade-in
         delay 20 { @game_started = true }
+        set_music "game_intro", "game_loop"
         "Go"
       else
         end_animation :countdown
