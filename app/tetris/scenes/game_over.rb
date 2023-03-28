@@ -1,7 +1,6 @@
 class TetrisGame
   def game_over_init
     set_music "game_over"
-    play_sound_effect "events/game_over"
 
     # Timeout to prevent skipping this screen if player is mashing the
     # A button as they game over

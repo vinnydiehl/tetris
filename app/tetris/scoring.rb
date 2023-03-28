@@ -89,10 +89,10 @@ class TetrisGame
   end
 
   def time_elapsed
-    seconds = @timer / @args.gtk.current_framerate
+    seconds = @timer / FPS
     minutes, seconds = seconds.divmod(60)
     hours, minutes = minutes.divmod(60)
-    milliseconds = (@timer % FPS) * 1000 / @args.gtk.current_framerate
+    milliseconds = (@timer % FPS) * 1000 / FPS
 
     "#{hours > 0 ? "%.2d:" % hours : ""}#{"%.2d" % minutes}:#{"%.2d" % seconds}.#{"%.3d" % milliseconds}"
   end

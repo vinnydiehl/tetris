@@ -9,6 +9,8 @@ class TetrisGame
     # they can move the piece left and right, but that's it; it will not fall, and
     # the timer is not running.
     @game_started = false
+    # Used to freeze the screen briefly after game over animation
+    @game_over = false
 
     @timer = 0
     @level = 1
@@ -45,7 +47,9 @@ class TetrisGame
   end
 
   def game_tick
-    @timer += 1 if @game_started
+    if @game_started && !animating?(:game_over)
+      @timer += 1
+    end
 
     handle_delayed_procs
     handle_input
@@ -63,8 +67,8 @@ class TetrisGame
     check_line_clear
     handle_scoring
 
-    if !@current_tetromino && !@spawning &&
-       %i[line_clear line_fall].none? { |a| animating? a }
+    if !@current_tetromino && !@spawning && !@game_over &&
+       %i[line_clear line_fall game_over].none? { |a| animating? a }
       delay(SPAWN_DELAY) { spawn_tetromino }
       @spawning = true
     end

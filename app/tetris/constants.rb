@@ -1,3 +1,5 @@
+FPS = 60
+
 # DAS - Delayed Auto-Shift
 # This is the # of frames of delay when holding left/right before
 # the piece begins to slide more quickly

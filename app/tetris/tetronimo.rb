@@ -199,7 +199,9 @@ class TetrisGame
 
     @current_tetromino = tetromino || @bag.shift
 
-    set_scene :game_over if @current_tetromino.any? { |mino, x, y| mino && @matrix[x][y] }
+    if @current_tetromino.any? { |mino, x, y| mino && @matrix[x][y] }
+      begin_animation :game_over
+    end
 
     reset_gravity_delay GRAVITY_VALUES[@level]
     @hold_available = true

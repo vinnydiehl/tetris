@@ -11,7 +11,9 @@ class TetrisGame
     if ((@current_tetromino.lock_down_timeout <= 0 || @current_tetromino.hard_dropped) && current_tetromino_colliding_y?) ||
        (@current_tetromino.lock_down_extensions >= MAX_LOCK_DOWN_ADJUSTMENTS && (current_tetromino_colliding_x?(:left, :right) || current_tetromino_colliding_y?))
       # Game over if you lock out above the grid
-      set_scene :game_over if @current_tetromino.all? { |mino, _, y| mino ? y >= MATRIX_HEIGHT  : true }
+      if @current_tetromino.all? { |mino, _, y| mino ? y >= MATRIX_HEIGHT  : true }
+        begin_animation :game_over
+      end
 
       play_sound_effect "tetromino/#{@current_tetromino.hard_dropped ? 'hard_drop' : 'lock'}"
 

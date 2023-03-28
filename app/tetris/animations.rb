@@ -1,12 +1,56 @@
+MATRIX_PX_WIDTH = MINO_SIZE * MATRIX_WIDTH
+MATRIX_PX_HEIGHT = MINO_SIZE * MATRIX_HEIGHT
+SHUTTER_HEIGHT = MINO_SIZE / 2
+SHUTTER_COUNT = (MATRIX_PX_HEIGHT / SHUTTER_HEIGHT).floor
+SHUTTER_ANIMATION_FRAMES = (4 / SHUTTER_COUNT).seconds
+
 class TetrisGame
   # Runs once on game start, called from #game_init
   def init_animations
+    MATRIX_Y0 = (@args.grid.h - MATRIX_PX_HEIGHT) / 2
+
     # This hash contains all currently running animations. They are looped
     # through, advanced and rendered every tick.
     @animations = {}
 
     @countdown_state = "Ready"
     @animation_matrix = empty_matrix
+
+    # The game over animation is a "curtain" composed of randomly generated
+    # complementary colors. These colors are arranged vertically in a series
+    # of 300x15 "shutters". As each one is animated it is added to this array
+    # so that it persists for the rest of the animation:
+    @closed_shutters = []
+
+    # Start with a random hue
+    h = rand
+    S = 0.8
+    V = 0.95
+    @shutter_colors = SHUTTER_COUNT.times.map do
+      # Use the golden ratio to advance the hue, resulting in an even
+      # distribution with no two similar colors adjacent
+      h += 0.618033988749895
+      h %= 1
+
+      # Convert to RGB:
+
+      h_i = (h * 6).to_i
+      f = h * 6 - h_i
+      p = V * (1 - S)
+      q = V * (1 - f * S)
+      t = V * (1 - (1 - f) * S)
+
+      r, g, b = case h_i
+      when 0 then [V, t, p]
+      when 1 then [q, V, p]
+      when 2 then [p, V, t]
+      when 3 then [p, q, V]
+      when 4 then [t, p, V]
+      when 5 then [V, p, q]
+      end
+
+      [(r * 256).floor, (g * 256).floor, (b * 256).floor]
+    end
   end
 
   # To begin an animation from the game, all you need to do is run this method
@@ -185,5 +229,56 @@ class TetrisGame
       # animation so here you go.
       render_matrix @matrix
     end
+  end
+
+  def animate_game_over
+    @animations[:game_over] ||= Enumerator.new do |animator|
+      @args.audio[:music] = nil
+      play_sound_effect "events/game_over" if @closed_shutters.empty?
+
+      animator.run(
+        eease(SHUTTER_ANIMATION_FRAMES, :identity) do |t|
+          height = t.lerp(0, SHUTTER_HEIGHT)
+          r, g, b = @shutter_colors.last
+
+          shutter = {
+            primitive_marker: :solid,
+            x: @args.grid.w / 2 - MATRIX_PX_WIDTH / 2,
+            y: MATRIX_Y0 + MATRIX_PX_HEIGHT - height - SHUTTER_HEIGHT * @closed_shutters.size,
+            w: MATRIX_PX_WIDTH,
+            h: height,
+            r: r,
+            g: g,
+            b: b
+          }
+
+          # t >= 1 means the shutter has fully lowered, transfer it to @closed_shutters
+          # to persist it throughout the rest of the animation
+          if t >= 1
+            @closed_shutters << shutter
+            @shutter_colors.pop
+          end
+
+          @args.outputs.primitives << shutter
+        end
+      )
+    end
+
+    begin
+      render_closed_shutters
+      @animations[:game_over].next
+    rescue StopIteration
+      if @shutter_colors.empty?
+        end_animation :game_over
+        @game_over = true
+        delay(30) { set_scene :game_over }
+      end
+
+      @animations[:game_over] = nil if animating?(:game_over)
+    end
+  end
+
+  def render_closed_shutters
+    @args.outputs.primitives << @closed_shutters
   end
 end

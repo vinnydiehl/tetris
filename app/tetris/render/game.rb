@@ -3,6 +3,7 @@ class TetrisGame
     render_background
 
     render_matrix @matrix unless animating? :line_fall
+    render_closed_shutters if @game_over
 
     if @current_tetromino
       render_ghost
