@@ -212,109 +212,29 @@ class TetrisGame
   end
 
   def render_score
-    @args.outputs.labels << [
-      {
-        text: time_elapsed,
-        x: 355,
-        y: 484,
-        size_enum: 4,
-        alignment_enum: 1,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "Score: #{@score}",
-        x: 268,
-        y: 440,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "Lines: #{@lines}",
-        x: 268,
-        y: 400,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "Level: #{@level}",
-        x: 268,
-        y: 360,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "SPM: #{score_per_minute}",
-        x: 268,
-        y: 320,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "LPM: #{lines_per_minute}",
-        x: 268,
-        y: 280,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "BRN: #{@burnt_lines}",
-        x: 268,
-        y: 240,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      }
-    ]
+    @args.outputs.labels << time_elapsed.label(x: 355, y: 484, size: 4, alignment: :center)
 
-    if @tetris_lines > 0
-      @args.outputs.labels << {
-        text: "TRT: #{tetris_rate}",
-        x: 268,
-        y: 200,
-        size_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      }
-    end
+    @args.outputs.labels << [
+      "Score: #{@score}",
+      "Lines: #{@lines}",
+      "Level: #{@level}",
+      "SPM: #{score_per_minute}",
+      "LPM: #{lines_per_minute}",
+      "BRN: #{@burnt_lines}",
+      @tetris_lines > 0 ? "TRT: #{tetris_rate}" : nil
+    ].span_vertically(x: 268, y: 440, spacing: 40, size: 2)
 
     if @back_to_back > 0
-      @args.outputs.labels << {
-        text: "Streak: #{@back_to_back}",
-        x: 355,
-        y: @highest_streak > 0 ? 138 : 108,
-        size_enum: 4,
-        alignment_enum: 1,
-        r: 255,
-        g: 255,
-        b: 255
-      }
+      @args.outputs.labels << "Streak: #{@back_to_back}".label(
+        x: 355, y: @highest_streak > 0 ? 138 : 108,
+        size: 4, alignment: :center
+      )
     end
 
     if @highest_streak > 0
-      @args.outputs.labels << {
-        text: @new_best_set ? "New Best!" : "Best Streak: #{@highest_streak}",
-        x: 355,
-        y: 98,
-        size_enum: 1,
-        alignment_enum: 1,
-        r: 255,
-        g: 255,
-        b: 255
-      }
+      @args.outputs.labels <<
+        (@new_best_set ? "New Best!" : "Best Streak: #{@highest_streak}").
+          label(x: 355, y: 98, alignment: :center)
     end
   end
 end

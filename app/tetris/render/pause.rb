@@ -7,26 +7,11 @@ class TetrisGame
       "#{controller_connected? ? "select" : "enter"} to restart"
 
     @args.outputs.labels << [
-      {
-        text: "#{advance_button} to continue",
-        x: @args.grid.w - PADDING,
-        y: PADDING + 64,
-        size_enum: 4,
-        alignment_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      },
-      {
-        text: "#{controller_connected? ? "Y" : "C"} for controls",
-        x: @args.grid.w - PADDING,
-        y: PADDING + 32,
-        size_enum: 4,
-        alignment_enum: 2,
-        r: 255,
-        g: 255,
-        b: 255
-      }
-    ]
+      "#{advance_button} to continue",
+      "#{controller_connected? ? "Y" : "C"} for controls",
+    ].span_vertically(
+      x: @args.grid.w - PADDING, y: PADDING + 64,
+      spacing: 32, size: 4, alignment: :right
+    )
   end
 end

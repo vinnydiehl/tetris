@@ -5,67 +5,13 @@ class TetrisGame
 
     if controller_connected?
       @args.outputs.labels << [
-        {
-          text: "D-Pad or analog stick to move side-to-side",
-          x: @args.grid.w / 2,
-          y: 460,
-          size_enum: 1,
-          alignment_enum: 1,
-          r: 255,
-          g: 255,
-          b: 255
-        },
-        {
-          text: "L and R to rotate",
-          x: @args.grid.w / 2,
-          y: 420,
-          size_enum: 1,
-          alignment_enum: 1,
-          r: 255,
-          g: 255,
-          b: 255
-        },
-        {
-          text: "D-Pad up or A to hard drop",
-          x: @args.grid.w / 2,
-          y: 380,
-          size_enum: 1,
-          alignment_enum: 1,
-          r: 255,
-          g: 255,
-          b: 255
-        },
-        {
-          text: "down to soft drop",
-          x: @args.grid.w / 2,
-          y: 340,
-          size_enum: 1,
-          alignment_enum: 1,
-          r: 255,
-          g: 255,
-          b: 255
-        },
-        {
-          text: "X or Y to hold",
-          x: @args.grid.w / 2,
-          y: 300,
-          size_enum: 1,
-          alignment_enum: 1,
-          r: 255,
-          g: 255,
-          b: 255
-        },
-        {
-          text: "start to pause",
-          x: @args.grid.w / 2,
-          y: 260,
-          size_enum: 1,
-          alignment_enum: 1,
-          r: 255,
-          g: 255,
-          b: 255
-        }
-      ]
+        "D-Pad or analog stick to move side-to-side",
+        "L and R to rotate",
+        "D-Pad up or A to hard drop",
+        "down to soft drop",
+        "X or Y to hold",
+        "start to pause"
+      ].span_vertically(x: @args.grid.w / 2, y: 460, spacing: 40, alignment: :center)
     else
       width = 1000
       height = 449
