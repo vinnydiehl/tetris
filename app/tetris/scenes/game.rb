@@ -47,7 +47,7 @@ class TetrisGame
   end
 
   def game_tick
-    if @game_started && !animating?(:game_over)
+    if @game_started && !@game_over
       @timer += 1
     end
 
@@ -68,7 +68,7 @@ class TetrisGame
     handle_scoring
 
     if !@current_tetromino && !@spawning && !@game_over &&
-       %i[line_clear line_fall game_over].none? { |a| animating? a }
+       %i[line_clear line_fall].none? { |a| animating? a }
       delay(SPAWN_DELAY) { spawn_tetromino }
       @spawning = true
     end

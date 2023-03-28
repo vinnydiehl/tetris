@@ -233,6 +233,7 @@ class TetrisGame
 
   def animate_game_over
     @animations[:game_over] ||= Enumerator.new do |animator|
+      @game_over = true
       @args.audio[:music] = nil
       play_sound_effect "events/game_over" if @closed_shutters.empty?
 
@@ -270,7 +271,6 @@ class TetrisGame
     rescue StopIteration
       if @shutter_colors.empty?
         end_animation :game_over
-        @game_over = true
         delay(30) { set_scene :game_over }
       end
 

@@ -36,7 +36,7 @@ class TetrisGame
 
   def set_volume(percent)
     @volume = percent / 100
-    @args.audio[:music][:gain] = @volume
+    @args.audio[:music][:gain] = @volume if @args.audio[:music]
   end
 
   def play_sound_effect(file)
