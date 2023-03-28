@@ -134,6 +134,51 @@ class TetrisGame
     end
   end
 
+  def animate_hard_drop
+    @animations[:hard_drop] ||= Enumerator.new do |animator|
+      play_sound_effect "tetromino/hard_drop"
+
+      orig_position = @current_tetromino.clone
+
+      # We've already calculated the position it's going to land in; the
+      # ghost! We'll just yoink that and get rid of the alpha channel...
+      @new_position = @ghost.clone
+      @new_position.color.pop
+
+      height_difference = orig_position.y - @new_position.y
+      height_difference_px = height_difference * MINO_SIZE
+
+      @score += height_difference * 2
+
+      animator.run(
+        # This falls at a constant speed: travel time is height_difference_px / 60 frames
+        eease((height_difference_px / 60).floor, Bezier.ease(1.00, 0.17, 0.54, 0.99)) do |t|
+          translation = [t.lerp(0, height_difference_px), height_difference_px].min
+
+          # Fade out the alpha slightly during the first quarter of its travel,
+          # then back in during the last
+          orig_position.color[3] = [
+            [(4 * translation / height_difference_px),
+             (4 - 4 * translation / height_difference_px)].min,
+          1].min.lerp(255, GHOST_ALPHA)
+
+          render_tetromino orig_position, y_translate: -translation,
+            # Use a darkened version of the tetronimo's color for the border as it falls
+            border: orig_position.color.first(3).map { |c| c / 4 }
+        end
+      )
+    end
+
+    begin
+      @animations[:hard_drop].next
+    rescue StopIteration
+      end_animation :hard_drop
+
+      @current_tetromino = @new_position
+      render_tetromino @current_tetromino
+    end
+  end
+
   def animate_line_clear
     @animations[:line_clear] ||= Enumerator.new do |animator|
       colors = @animation_matrix.clone

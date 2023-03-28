@@ -9,7 +9,7 @@ class TetrisGame
 
     if @current_tetromino
       render_ghost
-      render_tetromino @current_tetromino
+      render_tetromino @current_tetromino unless animating? :hard_drop
     end
 
     render_queue
@@ -99,6 +99,8 @@ class TetrisGame
      [:x_translate, 0],
      [:y_translate, 0]].each { |option, default| options[option] ||= default }
 
+    options[:border] ||= GRID_COLOR unless options[:border] == false
+
     matrix_x = (1280 - (MATRIX_WIDTH * options[:size])) / 2
     matrix_y = (720 - (MATRIX_HEIGHT * options[:size])) / 2 - (PEEK_HEIGHT / 2)
 
@@ -114,9 +116,8 @@ class TetrisGame
       a: a
     }
 
-    # We can't set this with `||= true` up top, obviously. Not that I tried...
-    unless options[:border] == false
-      r, g, b = GRID_COLOR
+    if options[:border]
+      r, g, b = options[:border]
 
       @args.outputs.primitives << {
         primitive_marker: :border,
@@ -139,24 +140,31 @@ class TetrisGame
     end
   end
 
-  def render_tetromino(tetromino)
+  def render_tetromino(tetromino, **options)
+    %i[x_translate y_translate].each { |opt| options[opt] ||= 0 }
+
     tetromino.each_with_coords do |mino, x, y|
-      render_mino x, y, *tetromino.color if mino && y < MATRIX_HEIGHT + 1
+      if mino && y < MATRIX_HEIGHT + 1
+        render_mino x, y, *tetromino.color, x_translate: options[:x_translate],
+                  border: options[:border], y_translate: options[:y_translate]
+      end
     end
   end
 
   def render_ghost
-    ghost = @current_tetromino.clone
+    # Saving this as an instance variable so we can access it in an
+    # animation later
+    @ghost = @current_tetromino.clone
 
     # Add alpha channel
-    ghost.color << GHOST_ALPHA
+    @ghost.color << GHOST_ALPHA
 
     # Drop it until it hits something
-    until ghost.any? { |mino, x, y| mino && (y - 1 < 0 || @matrix[x][y - 1]) }
-      ghost.y -= 1
+    until @ghost.any? { |mino, x, y| mino && (y - 1 < 0 || @matrix[x][y - 1]) }
+      @ghost.y -= 1
     end
 
-    render_tetromino ghost
+    render_tetromino @ghost
   end
 
   def render_queue
@@ -203,7 +211,7 @@ class TetrisGame
     # The rest need to move 1/2 space right
     three_wide_push = %i[l j t s z].include?(@held_tetromino.shape) ? MINO_SIZE / 2 : 0
 
-    @held_tetromino.each_with_coords(- 6 + o_push, 16 + o_push) do |mino, x, y|
+    @held_tetromino.each_with_coords(-6 + o_push, 16 + o_push) do |mino, x, y|
       if mino
         render_mino x, y, *@held_tetromino.color, @hold_available ? 255 : UNAVAILABLE_HOLD_ALPHA,
                     x_translate: -16 + three_wide_push, y_translate: 9 + i_push

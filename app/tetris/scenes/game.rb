@@ -54,16 +54,19 @@ class TetrisGame
     end
 
     handle_delayed_procs
-    handle_input
 
-    if @current_tetromino && @game_started && !@game_over
-      apply_gravity unless current_tetromino_colliding_y?
+    unless animating? :hard_drop || @game_over
+      handle_input
 
-      # Setting this starts the lock down, which can no longer
-      # be stopped even if you shift off the stack
-      @current_tetromino.lock_down = true if current_tetromino_colliding_y? && !locking_down?
+      if @current_tetromino && @game_started && !@game_over
+        apply_gravity unless current_tetromino_colliding_y?
 
-      lock_down if locking_down?
+        # Setting this starts the lock down, which can no longer
+        # be stopped even if you shift off the stack
+        @current_tetromino.lock_down = true if current_tetromino_colliding_y? && !locking_down?
+
+        lock_down if locking_down?
+      end
     end
 
     check_line_clear
@@ -126,6 +129,8 @@ class TetrisGame
       else
         if inputs_any?(kb: :space, c1: %i[directional_up a]) && @game_started
           @current_tetromino.hard_dropped = true
+          @current_tetromino.last_movement = :gravity
+          begin_animation :hard_drop unless current_tetromino_colliding_y?
         end
 
         @current_tetromino.soft_dropping = @args.inputs.down ? true : false
