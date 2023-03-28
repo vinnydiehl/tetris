@@ -200,13 +200,18 @@ class TetrisGame
     @current_tetromino = tetromino || @bag.shift
 
     if @current_tetromino.any? { |mino, x, y| mino && @matrix[x][y] }
+      # Game over condition
       begin_animation :game_over
+      @current_tetromino = nil
+    else
+      # Lowest part of the piece drops to y=19 immediately unless there
+      # stack is in the way
+      @current_tetromino.y -= 1 unless current_tetromino_colliding_y?
+
+      reset_gravity_delay GRAVITY_VALUES[@level]
+      @hold_available = true
     end
 
-    @current_tetromino.y -= 1 unless current_tetromino_colliding_y?
-
-    reset_gravity_delay GRAVITY_VALUES[@level]
-    @hold_available = true
     @spawning = false
   end
 

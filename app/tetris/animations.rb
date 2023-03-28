@@ -1,14 +1,10 @@
-MATRIX_PX_WIDTH = MINO_SIZE * MATRIX_WIDTH
-MATRIX_PX_HEIGHT = MINO_SIZE * MATRIX_HEIGHT
 SHUTTER_HEIGHT = MINO_SIZE / 2
-SHUTTER_COUNT = (MATRIX_PX_HEIGHT / SHUTTER_HEIGHT).floor
+SHUTTER_COUNT = (DISPLAY_HEIGHT / SHUTTER_HEIGHT).floor
 SHUTTER_ANIMATION_FRAMES = (4 / SHUTTER_COUNT).seconds
 
 class TetrisGame
   # Runs once on game start, called from #game_init
   def init_animations
-    MATRIX_Y0 = (@args.grid.h - MATRIX_PX_HEIGHT) / 2
-
     # This hash contains all currently running animations. They are looped
     # through, advanced and rendered every tick.
     @animations = {}
@@ -203,7 +199,7 @@ class TetrisGame
               # This height check renders the next one up (hidden behind the border) so
               # that it slides down. It uses the pixel translation to render the next one
               # in only after it has slid down far enough that it is hidden behind the border
-              if color && y <= MATRIX_HEIGHT + (translation / MINO_SIZE).floor
+              if color && y * MINO_SIZE - translation <= DISPLAY_HEIGHT
                 render_mino x, y, *color, y_translate: -translation
               end
             end
@@ -245,7 +241,7 @@ class TetrisGame
           shutter = {
             primitive_marker: :solid,
             x: @args.grid.w / 2 - MATRIX_PX_WIDTH / 2,
-            y: MATRIX_Y0 + MATRIX_PX_HEIGHT - height - SHUTTER_HEIGHT * @closed_shutters.size,
+            y: MATRIX_Y0 + DISPLAY_HEIGHT - height - SHUTTER_HEIGHT * @closed_shutters.size,
             w: MATRIX_PX_WIDTH,
             h: height,
             r: r,

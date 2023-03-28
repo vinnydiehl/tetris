@@ -2,6 +2,8 @@ class TetrisGame
   def render_game
     render_background
 
+    render_grid_lines
+
     render_matrix @matrix unless animating? :line_fall
     render_closed_shutters if @game_over
 
@@ -24,9 +26,9 @@ class TetrisGame
     color = [150, 150, 150]
 
     # Horizontal lines
-    (-8..MATRIX_WIDTH + 7).each do |x|
+    (-9..MATRIX_WIDTH + 8).each do |x|
       render_mino x, -1, *color, border: false
-      render_mino x, MATRIX_HEIGHT, *color, border: false
+      render_mino x, MATRIX_HEIGHT, *color, border: false, y_translate: PEEK_HEIGHT
     end
 
     # Vertical lines
@@ -43,6 +45,38 @@ class TetrisGame
     # Separators beneath next up/held pieces
     [-8..-1, (MATRIX_WIDTH..MATRIX_WIDTH + 7)].each do |range|
       range.each { |x| render_mino x, 15, *color, border: false }
+    end
+  end
+
+  def render_grid_lines
+    r, g, b = GRID_COLOR
+
+    @args.outputs.primitives << 9.times.map do |n|
+      x = MATRIX_X0 + MINO_SIZE * (n + 1) - 1
+      {
+        primitive_marker: :solid,
+        x: x,
+        y: MATRIX_Y0,
+        h: MATRIX_PX_HEIGHT,
+        w: 2,
+        r: r,
+        g: g,
+        b: b
+      }
+    end
+
+    @args.outputs.primitives << 20.times.map do |n|
+      y = MATRIX_Y0 + MINO_SIZE * (n + 1) - 1
+      {
+        primitive_marker: :solid,
+        x: MATRIX_X0,
+        y: y,
+        h: 2,
+        w: MATRIX_PX_WIDTH,
+        r: r,
+        g: g,
+        b: b
+      }
     end
   end
 
@@ -66,7 +100,7 @@ class TetrisGame
      [:y_translate, 0]].each { |option, default| options[option] ||= default }
 
     matrix_x = (1280 - (MATRIX_WIDTH * options[:size])) / 2
-    matrix_y = (720 - (MATRIX_HEIGHT * options[:size])) / 2
+    matrix_y = (720 - (MATRIX_HEIGHT * options[:size])) / 2 - (PEEK_HEIGHT / 2)
 
     @args.outputs.primitives << {
       primitive_marker: :solid,
@@ -82,15 +116,17 @@ class TetrisGame
 
     # We can't set this with `||= true` up top, obviously. Not that I tried...
     unless options[:border] == false
+      r, g, b = GRID_COLOR
+
       @args.outputs.primitives << {
         primitive_marker: :border,
         x: matrix_x + (x * options[:size]) + options[:x_translate],
         y: matrix_y + (y * options[:size]) + options[:y_translate],
         w: options[:size],
         h: options[:size],
-        r: 0,
-        g: 0,
-        b: 0
+        r: r,
+        g: g,
+        b: b
       }
     end
   end
@@ -98,14 +134,14 @@ class TetrisGame
   def render_matrix(matrix)
     matrix.each_with_index do |col, x|
       col.each_with_index do |color, y|
-        render_mino x, y, *color if color && y < MATRIX_HEIGHT
+        render_mino x, y, *color if color && y < MATRIX_HEIGHT + 1
       end
     end
   end
 
   def render_tetromino(tetromino)
     tetromino.each_with_coords do |mino, x, y|
-      render_mino x, y, *tetromino.color if mino && y < MATRIX_HEIGHT
+      render_mino x, y, *tetromino.color if mino && y < MATRIX_HEIGHT + 1
     end
   end
 
@@ -138,7 +174,7 @@ class TetrisGame
     next_up.each_with_coords(12 + o_push, 16 + o_push) do |mino, x, y|
       if mino
         render_mino x, y, *next_up.color,
-                    x_translate: 12 + three_wide_push, y_translate: 2 + i_push
+                    x_translate: 12 + three_wide_push, y_translate: 9 + i_push
       end
     end
 
@@ -170,7 +206,7 @@ class TetrisGame
     @held_tetromino.each_with_coords(- 6 + o_push, 16 + o_push) do |mino, x, y|
       if mino
         render_mino x, y, *@held_tetromino.color, @hold_available ? 255 : UNAVAILABLE_HOLD_ALPHA,
-                    x_translate: -16 + three_wide_push, y_translate: 2 + i_push
+                    x_translate: -16 + three_wide_push, y_translate: 9 + i_push
       end
     end
   end
@@ -180,7 +216,7 @@ class TetrisGame
       {
         text: time_elapsed,
         x: 355,
-        y: 490,
+        y: 484,
         size_enum: 4,
         alignment_enum: 1,
         r: 255,
@@ -259,7 +295,7 @@ class TetrisGame
       @args.outputs.labels << {
         text: "Streak: #{@back_to_back}",
         x: 355,
-        y: @highest_streak > 0 ? 145 : 115,
+        y: @highest_streak > 0 ? 138 : 108,
         size_enum: 4,
         alignment_enum: 1,
         r: 255,
@@ -272,7 +308,7 @@ class TetrisGame
       @args.outputs.labels << {
         text: @new_best_set ? "New Best!" : "Best Streak: #{@highest_streak}",
         x: 355,
-        y: 105,
+        y: 98,
         size_enum: 1,
         alignment_enum: 1,
         r: 255,
