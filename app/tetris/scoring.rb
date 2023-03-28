@@ -19,7 +19,9 @@ class TetrisGame
   end
 
   def handle_scoring
-    if @lines_cleared_this_frame.size > 0 || @t_spin
+    lines_cleared = @lines_cleared_this_frame.size
+
+    if lines_cleared > 0 || @t_spin
       points, sound = {
         [:full, 3] => [1600, "t_spin_triple"],
         [:full, 2] => [1200, "t_spin_double"],
@@ -32,7 +34,7 @@ class TetrisGame
         [nil,   3] => [500,  "triple"],
         [nil,   2] => [300,  "double"],
         [nil,   1] => [100,  "single"]
-      }[[@t_spin, @lines_cleared_this_frame.size]]
+      }[[@t_spin, lines_cleared]]
 
       play_sound_effect "score/#{sound}"
 
@@ -44,7 +46,7 @@ class TetrisGame
 
       # Process back-to-back bonus. A single, double, or triple
       # line clear will end a back-to-back streak
-      if @t_spin || @lines_cleared_this_frame.size == 4
+      if @t_spin || lines_cleared == 4
         points *= 1.5 if @back_to_back > 0
         @back_to_back += 1
 
@@ -72,15 +74,18 @@ class TetrisGame
         delay 30 { play_sound_effect "score/level_up" }
       end
 
-      # Note that @lines_cleared_this_frame.size was never directly added to @lines,
+      # Note that lines_cleared was never directly added to @lines,
       # instead being processed along with the score. We do need to save some
       # more data before we get rid of it:
-      @actual_lines_cleared += @lines_cleared_this_frame.size
+      @actual_lines_cleared += lines_cleared
 
-      if @lines_cleared_this_frame.size == 4
+      # This is saved so that lines cleared from T-Spins don't hurt TRT
+      @t_spin_lines_cleared += lines_cleared if @t_spin
+
+      if lines_cleared == 4
         @tetris_lines += 4
       elsif !@t_spin
-        @burnt_lines += @lines_cleared_this_frame.size
+        @burnt_lines += lines_cleared
       end
 
       # Reset this for next frame; @lines_cleared_this_frame is reset in the animation
@@ -103,7 +108,7 @@ class TetrisGame
 
   def tetris_rate
     @actual_lines_cleared == 0 ? 0 :
-      format_percent(@tetris_lines / @actual_lines_cleared * 100)
+      format_percent(@tetris_lines / (@actual_lines_cleared - @t_spin_lines_cleared) * 100)
   end
 
   def score_per_minute

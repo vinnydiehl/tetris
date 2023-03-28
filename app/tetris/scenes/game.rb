@@ -33,6 +33,7 @@ class TetrisGame
     @t_spin = nil
     @t_spins_scored = 0
     @mini_t_spins_scored = 0
+    @t_spin_lines_cleared = 0
 
     @gravity = GRAVITY_VALUES[1]
 
