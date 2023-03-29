@@ -56,7 +56,7 @@ class TetrisGame
     handle_delayed_procs
 
     unless animating? :hard_drop || @game_over
-      handle_input
+      handle_input unless @current_tetromino&.hard_dropped
 
       if @current_tetromino && @game_started && !@game_over
         apply_gravity unless current_tetromino_colliding_y?
