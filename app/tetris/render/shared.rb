@@ -1,5 +1,3 @@
-PADDING = 120
-
 class String
   # Creates a label primitive with the given options.
   #
@@ -83,11 +81,16 @@ class TetrisGame
     @args.outputs.solids << [0, 0, 1280, 720, 0, 0, 0]
   end
 
-  def render_corner_text(upper_left, lower_right)
+  def render_corner_text(upper_left, lower_right, **options)
     @args.outputs.labels << [
-      upper_left.label(x: PADDING, y: @args.grid.h - PADDING + 20, size: 20),
+      upper_left.label(x: PADDING, y: @args.grid.h - PADDING + 20, size: options[:size] || 20),
       lower_right.label( x: @args.grid.w - PADDING, y: PADDING, size: 4, alignment: :right)
     ]
+  end
+
+  def render_main_menu_text
+    @args.outputs.labels << "#{controller_connected? ? "L + R" : "m"} for main menu".label(
+      x: PADDING, y: PADDING, size: 4)
   end
 
   def render_stats

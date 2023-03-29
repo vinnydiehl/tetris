@@ -3,5 +3,5 @@ devid=vinnydiehl
 devtitle=Vinny Diehl
 gameid=tetris
 gametitle=Tetris
-version=0.4
+version=0.5
 icon=metadata/icon.png

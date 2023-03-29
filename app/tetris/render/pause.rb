@@ -3,6 +3,7 @@ class TetrisGame
     render_background
     render_stats
 
+    render_main_menu_text
     render_corner_text "it's okay. gather your thoughts.",
       "#{controller_connected? ? "select" : "enter"} to restart"
 

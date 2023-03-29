@@ -14,9 +14,14 @@ class TetrisGame
     @game_over = false
 
     @timer = 0
-    @level = 1
     @score = 0
     @lines = 0
+    @level = @starting_level
+
+    # This is set dynamically based on @starting_level,
+    # needs to start at 0 for that algorithm
+    @lines_needed = 0
+    set_lines_needed
 
     # @lines does not refer to the actual amount of lines cleared; they may be
     # awarded as bonuses. This is the actual amount cleared, for statistics purposes

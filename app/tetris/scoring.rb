@@ -60,19 +60,12 @@ class TetrisGame
       end
 
       @score += (points * @level).floor
-      @lines += (points / 100).floor
 
-      # This formula starts it at 5 lines to increment to level 2,
-      # then 10 more lines to increment to level 3, then 15, then
-      # 20; 5 is added to the increment each time. Level 15 is reached
-      # at 600 lines.
-      old_level = @level
-      @level = (1..Float::INFINITY).lazy.map { |i| (i * (i + 1) / 2) * 5 }.
-        take_while { |lines| lines <= @lines }.count + 1
+      lines_rewarded = (points / 100).floor
+      @lines += lines_rewarded
+      @lines_needed -= lines_rewarded
 
-      if @level > old_level
-        delay 30 { play_sound_effect "score/level_up" }
-      end
+      check_level
 
       # Note that lines_cleared was never directly added to @lines,
       # instead being processed along with the score. We do need to save some
@@ -91,6 +84,25 @@ class TetrisGame
       # Reset this for next frame; @lines_cleared_this_frame is reset in the animation
       @t_spin = nil
     end
+  end
+
+  # It starts at 5 lines to increment to level 2, then 10 more lines to increment
+  # to level 3, then 15, then 20; 5 is added to the increment each time. Level 15
+  # is reached at 600 lines. If you start at a higher level you will need the
+  # appropriate # of lines to advance that level, e.g. if you start at level 3 you
+  # will need 15 lines.
+  def check_level
+    if @lines_needed <= 0
+      @level += 1
+      set_lines_needed
+      delay 30 { play_sound_effect "score/level_up" }
+    end
+  end
+
+  # Sets the lines needed for the next level
+  def set_lines_needed
+    # If @lines_needed has gone into the negative, need to add it back to the new total
+    @lines_needed = @level * 5 + @lines_needed
   end
 
   def time_elapsed

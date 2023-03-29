@@ -1,5 +1,8 @@
 FPS = 60
 
+# Padding around the edges of the menus
+PADDING = 120
+
 # DAS - Delayed Auto-Shift
 # This is the # of frames of delay when holding left/right before
 # the piece begins to slide more quickly

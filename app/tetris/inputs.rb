@@ -10,4 +10,11 @@ class TetrisGame
   def inputs_back?
     inputs_any? kb: %i[escape space], c1: %i[start a b]
   end
+
+  def l_r_held?
+    (@c1_inputs.l1 || @c1_inputs.l2 ||
+     @args.inputs.controller_one.key_held.l1 || @args.inputs.controller_one.key_held.l2) &&
+    (@c1_inputs.r1 || @c1_inputs.r2 ||
+     @args.inputs.controller_one.key_held.r1 || @args.inputs.controller_one.key_held.r2)
+  end
 end
