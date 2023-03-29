@@ -88,11 +88,17 @@ class TetrisGame
     if @args.inputs.left != @args.inputs.right
       direction = @args.inputs.left ? :left : :right
 
+      # The @current_tetromino check is internal to allow the DAS input to
+      # buffer while there isn't a piece in play, e.g. if you hold right
+      # during the line clear animation, the next piece will immediately
+      # auto-shift to the right upon spawning.
       if @current_tetromino && !current_tetromino_colliding_x?(direction) &&
          (@das_timeout == DAS || (@das_timeout < 0 && @as_frame_timer == 0))
         play_sound_effect "tetromino/move"
 
         @current_tetromino.x += direction == :left ? -1 : 1
+
+        @current_tetromino.last_movement = :side
 
         if locking_down?
           reset_lock_down_delay
