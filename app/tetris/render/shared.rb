@@ -81,10 +81,24 @@ class TetrisGame
     @args.outputs.solids << [0, 0, 1280, 720, 0, 0, 0]
   end
 
+  # Renders the text seen in the corners of all of the menus.
+  #
+  # @overload render_corner_text(upper_left, lower_right)
+  #   @param upper_left [String] text to display in the upper left
+  #   @param lower_right [String] text to display in the lower right
+  # @overload render_corner_text(upper_left, lower_right)
+  #   @param upper_left [String] text to display in the upper left
+  #   @param lower_right [Array] text to display in the lower right, stacked vertically
+  #
+  # @param options [Hash] additional options
+  # @option options [Integer] :size custom size for the text in the upper left
   def render_corner_text(upper_left, lower_right, **options)
     @args.outputs.labels << [
       upper_left.label(x: PADDING, y: @args.grid.h - PADDING + 20, size: options[:size] || 20),
-      lower_right.label( x: @args.grid.w - PADDING, y: PADDING, size: 4, alignment: :right)
+      lower_right.is_a?(Array) ?
+        lower_right.span_vertically(spacing: 32, size: 4, alignment: :right,
+          x: @args.grid.w - PADDING, y: PADDING + 32 * (lower_right.size - 1)) :
+        lower_right.label(x: @args.grid.w - PADDING, y: PADDING, size: 4, alignment: :right)
     ]
   end
 
