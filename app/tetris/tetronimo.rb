@@ -89,8 +89,8 @@ class Tetromino
   end
 
   # Many methods involve iterating over each mino of a tetromino to perform
-  # an action (or a check, see #current_tetromino_any?). This method exposes
-  # the state (filled or unfilled) and matrix coordinates to a block of your
+  # an action (or a check, see Tetromino#any?). This method exposes the
+  # state (filled or unfilled) and matrix coordinates to a block of your
   # choice, like so:
   #
   #   @current_tetromino.each_with_coords do |mino, x, y|

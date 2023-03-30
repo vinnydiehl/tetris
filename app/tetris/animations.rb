@@ -150,10 +150,13 @@ class TetrisGame
 
       @score += height_difference * 2
 
+      @max_translation = 0
+
       animator.run(
         # This falls at a constant speed: travel time is height_difference_px / 60 frames
-        eease((height_difference_px / 60).floor, Bezier.ease(1.00, 0.17, 0.54, 0.99)) do |t|
+        eease((height_difference_px / 60).floor, Bezier.ease(0.84, 0.21, 0.92, 0.82)) do |t|
           translation = [t.lerp(0, height_difference_px), height_difference_px].min
+          @max_translation = [@max_translation, translation].max
 
           # Fade out the alpha slightly during the first quarter of its travel,
           # then back in during the last
@@ -165,6 +168,17 @@ class TetrisGame
           render_tetromino orig_position, y_translate: -translation,
             # Use a darkened version of the tetronimo's color for the border as it falls
             border: orig_position.color.first(3).map { |c| c / 4 }
+
+          render_tetromino_blur orig_position, translation,
+            t.lerp(translation, translation * 0.5),
+            [(translation/(height_difference_px / 4)), 1].min.lerp(255, GHOST_ALPHA)
+        end +
+        # Retract the motion blur now that the tetromino has landed
+        eease(0.1.seconds, Bezier.ease(0.25, 1.06, 0.72, 0.98)) do |t|
+          # Render the tetromino that has landed at the bottom
+          render_tetromino orig_position, y_translate: -@max_translation
+          render_tetromino_blur orig_position, @max_translation,
+                                t.lerp(@max_translation * 0.5, 0), GHOST_ALPHA
         end
       )
     end
@@ -176,6 +190,27 @@ class TetrisGame
 
       @current_tetromino = @new_position
       render_tetromino @current_tetromino
+    end
+  end
+
+  def render_tetromino_blur(orig_position, translation, height, alpha)
+    tetromino_height = orig_position.minos.first.size
+
+    orig_position.each_with_coords do |mino, x, y|
+      # Only display a blur sprite above the top blocks in the tetromino
+      if mino && (y == tetromino_height - 1 ||
+                  orig_position.minos[x - orig_position.x][y - orig_position.y + 1].nil?)
+        blur_x, blur_y = mino_px_position x, y + 1
+        @args.outputs.primitives << {
+          path: "sprites/blur/#{orig_position.shape}.png",
+          x: blur_x,
+          # Stretch vertically as the tetromino translates downward
+          y: blur_y - translation,
+          w: MINO_SIZE,
+          h: height,
+          a: alpha
+        }
+      end
     end
   end
 

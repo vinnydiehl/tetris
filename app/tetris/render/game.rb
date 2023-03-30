@@ -82,8 +82,8 @@ class TetrisGame
 
   # Render a single "mino" (one square of a tetromino).
   #
-  # @param x [Integer] x-coordinate on the matrix
-  # @param y [Integer] y-coordinate on the matrix
+  # @param matrix_x [Integer] x-coordinate on the matrix
+  # @param matrix_y [Integer] y-coordinate on the matrix
   # @param r [Integer] RGBa red component, 0-255
   # @param g [Integer] RGBa green component, 0-255
   # @param b [Integer] RGBa blue component, 0-255
@@ -94,20 +94,19 @@ class TetrisGame
   # @option options [Integer] :x_translate custom x translation in pixels
   # @option options [Integer] :y_translate custom y translation in pixels
   # @option options [Boolean] :border whether or not to display a black border
-  def render_mino(x, y, r, g, b, a=255, **options)
+  def render_mino(matrix_x, matrix_y, r, g, b, a=255, **options)
     [[:size, MINO_SIZE],
      [:x_translate, 0],
      [:y_translate, 0]].each { |option, default| options[option] ||= default }
 
     options[:border] ||= GRID_COLOR unless options[:border] == false
 
-    matrix_x = (1280 - (MATRIX_WIDTH * options[:size])) / 2
-    matrix_y = (720 - (MATRIX_HEIGHT * options[:size])) / 2 - (PEEK_HEIGHT / 2)
+    x, y = mino_px_position matrix_x, matrix_y, size: options[:size]
 
     @args.outputs.primitives << {
       primitive_marker: :solid,
-      x: matrix_x + (x * options[:size]) + options[:x_translate],
-      y: matrix_y + (y * options[:size]) + options[:y_translate],
+      x: x + options[:x_translate],
+      y: y + options[:y_translate],
       w: options[:size],
       h: options[:size],
       r: r,
@@ -121,8 +120,8 @@ class TetrisGame
 
       @args.outputs.primitives << {
         primitive_marker: :border,
-        x: matrix_x + (x * options[:size]) + options[:x_translate],
-        y: matrix_y + (y * options[:size]) + options[:y_translate],
+        x: x + options[:x_translate],
+        y: y + options[:y_translate],
         w: options[:size],
         h: options[:size],
         r: r,
@@ -130,6 +129,13 @@ class TetrisGame
         b: b
       }
     end
+  end
+
+  def mino_px_position(matrix_x, matrix_y, **options)
+    options[:size] ||= MINO_SIZE
+
+    [(1280 - (MATRIX_WIDTH * options[:size])) / 2 + (matrix_x * options[:size]),
+     (720 - (MATRIX_HEIGHT * options[:size])) / 2 - (PEEK_HEIGHT / 2) + (matrix_y * options[:size])]
   end
 
   def render_matrix(matrix)
