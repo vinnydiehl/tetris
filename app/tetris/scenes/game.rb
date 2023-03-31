@@ -139,9 +139,9 @@ class TetrisGame
         end
       else
         if inputs_any?(kb: :space, c1: %i[directional_up a]) && @game_started
+          begin_animation :hard_drop unless current_tetromino_colliding_y?
           @current_tetromino.hard_dropped = true
           @current_tetromino.last_movement = :gravity
-          begin_animation :hard_drop unless current_tetromino_colliding_y?
         end
 
         @current_tetromino.soft_dropping = @args.inputs.down ? true : false
