@@ -28,7 +28,7 @@ class TetrisGame
       # at the very beginning of this method, but it was causing a 1 frame delay which
       # was quite noticeable. This switches the music over same-frame.
       if !@args.audio[:music][:looping] &&
-         @args.audio[:music][:playtime] >= @args.audio[:music][:playtime]
+         @args.audio[:music][:playtime].round(2) >= @args.audio[:music][:length].round(2)
         @args.audio[:music] = @music_buffer
       end
     end

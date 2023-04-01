@@ -20,7 +20,7 @@ GRAVITY_VALUES = [
 ]
 
 class TetrisGame
-  def calculate_gravity(soft_drop_input)
+  def calculate_gravity
     original = @gravity
 
     level_gravity = GRAVITY_VALUES[[@level, 15].min]

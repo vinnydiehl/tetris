@@ -2,6 +2,11 @@ SHUTTER_HEIGHT = MINO_SIZE / 2
 SHUTTER_COUNT = (DISPLAY_HEIGHT / SHUTTER_HEIGHT).floor
 SHUTTER_ANIMATION_FRAMES = (4 / SHUTTER_COUNT).seconds
 
+# Saturation and value for the randomly
+# generated game over animation colors
+S = 0.8
+V = 0.95
+
 class TetrisGame
   # Runs once on game start, called from #game_init
   def init_animations
@@ -20,8 +25,6 @@ class TetrisGame
 
     # Start with a random hue
     h = rand
-    S = 0.8
-    V = 0.95
     @shutter_colors = SHUTTER_COUNT.times.map do
       # Use the golden ratio to advance the hue, resulting in an even
       # distribution with no two similar colors adjacent
@@ -36,14 +39,15 @@ class TetrisGame
       q = V * (1 - f * S)
       t = V * (1 - (1 - f) * S)
 
-      r, g, b = case h_i
-      when 0 then [V, t, p]
-      when 1 then [q, V, p]
-      when 2 then [p, V, t]
-      when 3 then [p, q, V]
-      when 4 then [t, p, V]
-      when 5 then [V, p, q]
-      end
+      r, g, b =\
+        case h_i
+        when 0 then [V, t, p]
+        when 1 then [q, V, p]
+        when 2 then [p, V, t]
+        when 3 then [p, q, V]
+        when 4 then [t, p, V]
+        when 5 then [V, p, q]
+        end
 
       [(r * 256).floor, (g * 256).floor, (b * 256).floor]
     end
@@ -116,19 +120,20 @@ class TetrisGame
     begin
       @animations[:countdown].next
     rescue StopIteration
-      @countdown_state = case @countdown_state
-      when "Ready" then "3"
-      when   "3"   then "2"
-      when   "2"   then "1"
-      when   "1"
-        # Delay syncs perfectly with the sound effect and fade-in
-        delay 20 { @game_started = true }
-        set_music "game_intro", "game_loop"
-        "Go"
-      else
-        end_animation :countdown
-        nil
-      end
+      @countdown_state =\
+        case @countdown_state
+        when "Ready" then "3"
+        when   "3"   then "2"
+        when   "2"   then "1"
+        when   "1"
+          # Delay syncs perfectly with the sound effect and fade-in
+          delay(20) { @game_started = true }
+          set_music "game_intro", "game_loop"
+          "Go"
+        else
+          end_animation :countdown
+          nil
+        end
 
       @animations[:countdown] = nil if animating?(:countdown)
     end

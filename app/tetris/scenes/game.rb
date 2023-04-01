@@ -60,7 +60,7 @@ class TetrisGame
 
     handle_delayed_procs
 
-    unless animating? :hard_drop || @game_over
+    unless animating?(:hard_drop) || @game_over
       handle_input unless @current_tetromino&.hard_dropped
 
       if @current_tetromino && @game_started && !@game_over
@@ -146,7 +146,7 @@ class TetrisGame
 
         @current_tetromino.soft_dropping = @args.inputs.down ? true : false
 
-        calculate_gravity(@args.inputs.down)
+        calculate_gravity
 
         if inputs_any? kb: %i[up x], c1: %i[r1 r2]
           play_sound_effect "tetromino/rotate"

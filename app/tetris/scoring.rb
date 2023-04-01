@@ -41,7 +41,7 @@ class TetrisGame
       # All Clear bonus
       if @matrix.all? { |col| col.none? }
         points += 400
-        delay 30 { play_sound_effect "score/all_clear" }
+        delay(30) { play_sound_effect "score/all_clear" }
       end
 
       # Process back-to-back bonus. A single, double, or triple
@@ -95,7 +95,7 @@ class TetrisGame
     if @lines_needed <= 0
       @level += 1
       set_lines_needed
-      delay 30 { play_sound_effect "score/level_up" }
+      delay(30) { play_sound_effect "score/level_up" }
     end
   end
 
@@ -115,7 +115,7 @@ class TetrisGame
   end
 
   def minutes_elapsed
-    minutes_elapsed = @timer / 60 / 60
+    @timer / 60 / 60
   end
 
   def tetris_rate

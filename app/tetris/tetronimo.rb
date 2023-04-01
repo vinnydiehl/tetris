@@ -61,9 +61,9 @@ SHAPES = [
 
 class Tetromino
   attr_reader :shape
-  attr_accessor *%i[minos color x y rotation age gravity_delay
+  attr_accessor(*%i[minos color x y rotation age gravity_delay
                     lock_down last_movement lock_down_timeout
-                    lock_down_extensions hard_dropped soft_dropping]
+                    lock_down_extensions hard_dropped soft_dropping])
 
   def initialize(shape)
     @shape, @minos, @color = shape.values_at(:shape, :minos, :color)

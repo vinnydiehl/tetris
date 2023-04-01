@@ -49,7 +49,7 @@ class Array
 
       str.label x, y - spacing * i,
                 size: size, alignment: alignment,
-                r: r, g: g, b: b
+                r: r, g: g, b: b, a: a
     end.compact
   end
 end

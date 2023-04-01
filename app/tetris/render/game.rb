@@ -34,12 +34,12 @@ class TetrisGame
     # Vertical lines
     (-1..MATRIX_HEIGHT).each do |y|
       # Edges of matrix
-      render_mino -1, y, *color, border: false
+      render_mino(-1, y, *color, border: false)
       render_mino MATRIX_WIDTH, y, *color, border: false
 
       # Far edges
       render_mino MATRIX_WIDTH + 8, y, *color, border: false
-      render_mino -9, y, *color, border: false
+      render_mino(-9, y, *color, border: false)
     end
 
     # Separators beneath next up/held pieces
