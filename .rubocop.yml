@@ -1,0 +1,31 @@
+Style/StringLiterals:
+  Enabled: false
+
+Style/FormatString:
+  Enabled: false
+
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+# I like the idea but this is too strict
+Style/GuardClause:
+  Enabled: false
+
+# DragonRuby requires file extension
+Style/RedundantFileExtensionInRequire:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+AllCops:
+  NewCops: enable

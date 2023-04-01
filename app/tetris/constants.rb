@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FPS = 60
 
 # Padding around the edges of the menus
@@ -37,7 +39,7 @@ MATRIX_Y0 = ((720 - MATRIX_PX_HEIGHT) / 2) - (PEEK_HEIGHT / 2)
 MATRIX_X0 = (1280 - MATRIX_PX_WIDTH) / 2
 
 # Color of the grid lines behind the matrix
-GRID_COLOR = [10, 10, 10]
+GRID_COLOR = [10, 10, 10].freeze
 
 # Opacity of the ghost (0-255)
 GHOST_ALPHA = 80

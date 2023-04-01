@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The tetronimos' minos are represented as square 2D arrays.
 # They are rotated around their centers.
 SHAPES = [
@@ -57,7 +59,7 @@ SHAPES = [
     minos: [[nil, nil, 1], [nil, 1, 1], [nil, 1, nil]],
     color: [255, 0, 0]
   }
-]
+].freeze
 
 class Tetromino
   attr_reader :shape
