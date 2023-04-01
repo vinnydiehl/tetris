@@ -111,7 +111,7 @@ class TetrisGame
     hours, minutes = minutes.divmod(60)
     milliseconds = (@timer % FPS) * 1000 / FPS
 
-    "#{hours > 0 ? "%.2d:" % hours : ""}#{"%.2d" % minutes}:#{"%.2d" % seconds}.#{"%.3d" % milliseconds}"
+    "#{hours > 0 ? '%.2d:' % hours : ''}#{'%.2d' % minutes}:#{'%.2d' % seconds}.#{'%.3d' % milliseconds}"
   end
 
   def minutes_elapsed

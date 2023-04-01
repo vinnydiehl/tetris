@@ -31,8 +31,8 @@ class TetrisGame
     render_background
 
     render_corner_text "relax. take a deep breath.",
-                       ["press #{controller_connected? ? "X" : "M"} to toggle music.",
-                        "press #{controller_connected? ? "start" : "escape"} for controls.",
+                       ["press #{controller_connected? ? 'X' : 'M'} to toggle music.",
+                        "press #{controller_connected? ? 'start' : 'escape'} for controls.",
                         "press #{advance_button} when you're ready."]
 
     render_level_selector

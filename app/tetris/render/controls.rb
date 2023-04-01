@@ -1,7 +1,7 @@
 class TetrisGame
   def render_controls
     render_background
-    render_corner_text "controls", "#{controller_connected? ? "B" : "escape"} to go back"
+    render_corner_text "controls", "#{controller_connected? ? 'B' : 'escape'} to go back"
 
     if controller_connected?
       @args.outputs.labels << [

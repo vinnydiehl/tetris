@@ -91,7 +91,7 @@ class TetrisGame
   def animate_countdown
     @animations[:countdown] ||= Enumerator.new do |animator|
       play_sound_effect "events/#{
-        %w[3 2 1].include?(@countdown_state) ? "count" : @countdown_state.downcase
+        %w[3 2 1].include?(@countdown_state) ? 'count' : @countdown_state.downcase
       }"
 
       attrs = {

@@ -80,7 +80,7 @@ class TetrisGame
   end
 
   def render_main_menu_text
-    @args.outputs.labels << "#{controller_connected? ? "L + R" : "m"} for main menu".label(
+    @args.outputs.labels << "#{controller_connected? ? 'L + R' : 'm'} for main menu".label(
       PADDING, PADDING, size: 4)
   end
 
