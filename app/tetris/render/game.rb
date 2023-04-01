@@ -89,53 +89,49 @@ class TetrisGame
   # @param b [Integer] RGBa blue component, 0-255
   # @param a [Integer] RGBa alpha component, 0-255
   #
-  # @param options [Hash] additional options
-  # @option options [Integer] :size custom size in pixels
-  # @option options [Integer] :x_translate custom x translation in pixels
-  # @option options [Integer] :y_translate custom y translation in pixels
-  # @option options [Boolean] :border whether or not to display a black border
-  def render_mino(matrix_x, matrix_y, r, g, b, a=255, **options)
-    [[:size, MINO_SIZE],
-     [:x_translate, 0],
-     [:y_translate, 0]].each { |option, default| options[option] ||= default }
+  # @option :size [Integer] custom size in pixels
+  # @option :x_translate [Integer] custom x translation in pixels
+  # @option :y_translate [Integer] custom y translation in pixels
+  # @option :border [Boolean] whether or not to display a black border
+  #   (you can also pass in an array of 3-4 integers to specify a color)
+  def render_mino(matrix_x, matrix_y, r, g, b, a=255,
+                  size: MINO_SIZE, x_translate: 0, y_translate: 0, border: true)
+    border = GRID_COLOR if border == true
 
-    options[:border] ||= GRID_COLOR unless options[:border] == false
-
-    x, y = mino_px_position matrix_x, matrix_y, size: options[:size]
+    x, y = mino_px_position matrix_x, matrix_y, size: size
 
     @args.outputs.primitives << {
       primitive_marker: :solid,
-      x: x + options[:x_translate],
-      y: y + options[:y_translate],
-      w: options[:size],
-      h: options[:size],
+      x: x + x_translate,
+      y: y + y_translate,
+      w: size,
+      h: size,
       r: r,
       g: g,
       b: b,
       a: a
     }
 
-    if options[:border]
-      r, g, b = options[:border]
+    if border
+      r, g, b, a = border
 
       @args.outputs.primitives << {
         primitive_marker: :border,
-        x: x + options[:x_translate],
-        y: y + options[:y_translate],
-        w: options[:size],
-        h: options[:size],
+        x: x + x_translate,
+        y: y + y_translate,
+        w: size,
+        h: size,
         r: r,
         g: g,
-        b: b
+        b: b,
+        a: a
       }
     end
   end
 
-  def mino_px_position(matrix_x, matrix_y, **options)
-    options[:size] ||= MINO_SIZE
-
-    [(1280 - (MATRIX_WIDTH * options[:size])) / 2 + (matrix_x * options[:size]),
-     (720 - (MATRIX_HEIGHT * options[:size])) / 2 - (PEEK_HEIGHT / 2) + (matrix_y * options[:size])]
+  def mino_px_position(matrix_x, matrix_y, size: MINO_SIZE)
+    [(1280 - (MATRIX_WIDTH * size)) / 2 + (matrix_x * size),
+     (720 - (MATRIX_HEIGHT * size)) / 2 - (PEEK_HEIGHT / 2) + (matrix_y * size)]
   end
 
   def render_matrix(matrix)
@@ -146,13 +142,11 @@ class TetrisGame
     end
   end
 
-  def render_tetromino(tetromino, **options)
-    %i[x_translate y_translate].each { |opt| options[opt] ||= 0 }
-
+  def render_tetromino(tetromino, x_translate: 0, y_translate: 0, border: true)
     tetromino.each_with_coords do |mino, x, y|
       if mino && y < MATRIX_HEIGHT + 1
-        render_mino x, y, *tetromino.color, x_translate: options[:x_translate],
-                  border: options[:border], y_translate: options[:y_translate]
+        render_mino x, y, *tetromino.color, x_translate: x_translate,
+                            border: border, y_translate: y_translate
       end
     end
   end
@@ -226,7 +220,7 @@ class TetrisGame
   end
 
   def render_score
-    @args.outputs.labels << time_elapsed.label(x: 355, y: 484, size: 4, alignment: :center)
+    @args.outputs.labels << time_elapsed.label(355, 484, size: 4, alignment: :center)
 
     @args.outputs.labels << [
       "Score: #{@score}",
@@ -236,11 +230,11 @@ class TetrisGame
       "LPM: #{lines_per_minute}",
       "BRN: #{@burnt_lines}",
       @tetris_lines > 0 ? "TRT: #{tetris_rate}" : nil
-    ].span_vertically(x: 268, y: 440, spacing: 40, size: 2)
+    ].span_vertically(268, 440, 40, size: 2)
 
     if @back_to_back > 0
       @args.outputs.labels << "Streak: #{@back_to_back}".label(
-        x: 355, y: @highest_streak > 0 ? 138 : 108,
+        355, @highest_streak > 0 ? 138 : 108,
         size: 4, alignment: :center
       )
     end
@@ -248,7 +242,7 @@ class TetrisGame
     if @highest_streak > 0
       @args.outputs.labels <<
         (@new_best_set ? "New Best!" : "Best Streak: #{@highest_streak}").
-          label(x: 355, y: 98, alignment: :center)
+          label(355, 98, alignment: :center)
     end
   end
 end

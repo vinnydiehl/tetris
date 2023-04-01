@@ -42,9 +42,9 @@ class TetrisGame
     @args.outputs.sprites << @selector_buttons
 
     @args.outputs.labels << [
-      @starting_level.to_s.label(x: 159, y: 145, size: 8, alignment: :center,
+      @starting_level.to_s.label(159, 145, size: 8, alignment: :center,
         a: 77.5 * Math.sin(0.03 * (@args.state.tick_count - @selector_last_clicked) + 1.6) + 177.5),
-      %w[choose level].span_vertically(x: 200, y: 150, spacing: 25)
+      %w[choose level].span_vertically(200, 150, 25)
     ]
   end
 end

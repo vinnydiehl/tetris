@@ -1,40 +1,26 @@
 class String
   # Creates a label primitive with the given options.
   #
-  # @param options [Hash] options to feed to the primitive
-  # @option options [Integer] :x x-coordinate in pixels
-  # @option options [Integer] :y y-coordinate in pixels
-  # @option options [Integer] :size the size of the text
-  # @option options [Symbol] :alignment :left, :center, or :right
-  # @option options [Integer] :r RGBa red value
-  # @option options [Integer] :g RGBa green value
-  # @option options [Integer] :b RGBa blue value
-  # @option options [Integer] :a RGBa alpha value
-  def label(**options)
-    %i[x y].each do |required_opt|
-      raise ArgumentError, ":#{required_opt} option required" unless required_opt
-    end
-
-    options.keys.each do |option|
-      if option.include? "_enum"
-        raise ArgumentError, "try :#{option.to_s.split("_").first} instead of :#{option}"
-      end
-    end
-
-    if options[:alignment].is_a?(Symbol)
-      options[:alignment] = {left: 0, center: 1, right: 2}[options[:alignment]]
+  # @param x [Integer] x-coordinate in pixels
+  # @param x [Integer] y-coordinate in pixels
+  #
+  # @option :size [Integer] the size of the text
+  # @option :alignment [Symbol] :left, :center, or :right
+  # @option :r [Integer] RGBa red value
+  # @option :g [Integer] RGBa green value
+  # @option :b [Integer] RGBa blue value
+  # @option :a [Integer] RGBa alpha value
+  def label(x, y, size: 1, alignment: 0, r: 255, g: 255, b: 255, a: 255)
+    if alignment.is_a?(Symbol)
+      alignment = {left: 0, center: 1, right: 2}[alignment]
     end
 
     {
       text: self,
-      x: options[:x],
-      y: options[:y],
-      size_enum: options[:size] || 1,
-      alignment_enum: options[:alignment] || 0,
-      r: options[:r] || 255,
-      g: options[:g] || 255,
-      b: options[:b] || 255,
-      a: options[:a] || 255
+      x: x, y: y,
+      size_enum: size,
+      alignment_enum: alignment,
+      r: r, g: g, b: b, a: a
     }
   end
 end
@@ -42,36 +28,28 @@ end
 class Array
   # Span an array of strings into several labels with even spacing.
   #
-  # @param options [Hash] options to feed to the primitive
-  # @option options [Integer] :x x-coordinate in pixels of the top label
-  # @option options [Integer] :y y-coordinate in pixels
-  # @option options [Integer] :spacing the space in pixels between the labels
-  # @option options [Integer] :size the size of the text
-  # @option options [Symbol] :alignment :left, :center, or :right
-  # @option options [Integer] :r RGBa red value
-  # @option options [Integer] :g RGBa green value
-  # @option options [Integer] :b RGBa blue value
-  # @option options [Integer] :a RGBa alpha value
-  def span_vertically(**options)
-    %i[x y spacing].each do |required_opt|
-      raise ArgumentError, ":#{required_opt} option required" unless required_opt
-    end
-
+  # @param x [Integer] x-coordinate in pixels of the top label
+  # @param y [Integer] y-coordinate in pixels
+  # @param spacing [Integer] the space in pixels between the labels
+  #
+  # @option :size [Integer] the size of the text
+  # @option :alignment [Symbol] :left, :center, or :right
+  # @option :r [Integer] RGBa red value
+  # @option :g [Integer] RGBa green value
+  # @option :b [Integer] RGBa blue value
+  # @option :a [Integer] RGBa alpha value
+  def span_vertically(x, y, spacing, size: 1, alignment: 0, r: 255, g: 255, b: 255, a: 255)
     # String#label would do this anyway, but it's more efficient to do it here
-    if options[:alignment].is_a?(Symbol)
-      options[:alignment] = {left: 0, center: 1, right: 2}[options[:alignment]]
+    if alignment.is_a?(Symbol)
+      alignment = {left: 0, center: 1, right: 2}[alignment]
     end
 
     each_with_index.map do |str, i|
       next if str.nil? || str.empty?
 
-      str.label x: options[:x],
-                y: options[:y] - options[:spacing] * i,
-                size: options[:size],
-                alignment: options[:alignment],
-                r: options[:r],
-                g: options[:g],
-                b: options[:b]
+      str.label x, y - spacing * i,
+                size: size, alignment: alignment,
+                r: r, g: g, b: b
     end.compact
   end
 end
@@ -90,21 +68,20 @@ class TetrisGame
   #   @param upper_left [String] text to display in the upper left
   #   @param lower_right [Array] text to display in the lower right, stacked vertically
   #
-  # @param options [Hash] additional options
-  # @option options [Integer] :size custom size for the text in the upper left
-  def render_corner_text(upper_left, lower_right, **options)
+  # @option :size [Integer] custom size for the text in the upper left
+  def render_corner_text(upper_left, lower_right, size: 20)
     @args.outputs.labels << [
-      upper_left.label(x: PADDING, y: @args.grid.h - PADDING + 20, size: options[:size] || 20),
+      upper_left.label(PADDING, @args.grid.h - PADDING + 20, size: size),
       lower_right.is_a?(Array) ?
-        lower_right.span_vertically(spacing: 32, size: 4, alignment: :right,
-          x: @args.grid.w - PADDING, y: PADDING + 32 * (lower_right.size - 1)) :
-        lower_right.label(x: @args.grid.w - PADDING, y: PADDING, size: 4, alignment: :right)
+        lower_right.span_vertically(@args.grid.w - PADDING, PADDING + 32 * (lower_right.size - 1),
+                                    32, size: 4, alignment: :right) :
+        lower_right.label(@args.grid.w - PADDING, PADDING, size: 4, alignment: :right)
     ]
   end
 
   def render_main_menu_text
     @args.outputs.labels << "#{controller_connected? ? "L + R" : "m"} for main menu".label(
-      x: PADDING, y: PADDING, size: 4)
+      PADDING, PADDING, size: 4)
   end
 
   def render_stats
@@ -120,7 +97,7 @@ class TetrisGame
       "Tetrises: #{(@tetris_lines / 4).floor}",
       "T-Spins: #{@t_spins_scored}#{@mini_t_spins_scored > 0 ? " (+ #{@mini_t_spins_scored} mini)" : ''}",
       "Best Streak: #{@highest_streak}"
-    ].span_vertically(x: @args.grid.w / 2, y: 500, spacing: 30, alignment: :center)
+    ].span_vertically(@args.grid.w / 2, 500, 30, alignment: :center)
   end
 
   def controller_connected?

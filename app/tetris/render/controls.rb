@@ -11,7 +11,7 @@ class TetrisGame
         "down to soft drop",
         "X or Y to hold",
         "start to pause"
-      ].span_vertically(x: @args.grid.w / 2, y: 460, spacing: 40, alignment: :center)
+      ].span_vertically(@args.grid.w / 2, 460, 40, alignment: :center)
     else
       width = 1000
       height = 449
@@ -26,3 +26,4 @@ class TetrisGame
     end
   end
 end
+
