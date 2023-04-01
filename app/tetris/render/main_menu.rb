@@ -43,7 +43,8 @@ class TetrisGame
 
     @args.outputs.labels << [
       @starting_level.to_s.label(159, 145, size: 8, alignment: :center,
-        a: 77.5 * Math.sin(0.03 * (@args.state.tick_count - @selector_last_clicked) + 1.6) + 177.5),
+        # Sine function to pulse the alpha between 100 and 255 every ~200 frames
+        a: (77.5 * Math.sin((0.03 * (@args.state.tick_count - @selector_last_clicked)) + 1.6)) + 177.5),
       %w[choose level].span_vertically(200, 150, 25)
     ]
   end

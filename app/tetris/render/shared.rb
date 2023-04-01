@@ -47,7 +47,7 @@ class Array
     each_with_index.map do |str, i|
       next if str.nil? || str.empty?
 
-      str.label x, y - spacing * i,
+      str.label x, y - (spacing * i),
                 size: size, alignment: alignment,
                 r: r, g: g, b: b, a: a
     end.compact
@@ -73,7 +73,7 @@ class TetrisGame
     @args.outputs.labels << [
       upper_left.label(PADDING, @args.grid.h - PADDING + 20, size: size),
       lower_right.is_a?(Array) ?
-        lower_right.span_vertically(@args.grid.w - PADDING, PADDING + 32 * (lower_right.size - 1),
+        lower_right.span_vertically(@args.grid.w - PADDING, PADDING + (32 * (lower_right.size - 1)),
                                     32, size: 4, alignment: :right) :
         lower_right.label(@args.grid.w - PADDING, PADDING, size: 4, alignment: :right)
     ]

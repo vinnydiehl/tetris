@@ -38,8 +38,8 @@ class TetrisGame
       last_test_tried = kick_test_i
 
       # Translate it (from the point where it originated, the x and y of @current_tetromino)
-      sim_tetromino.x = @current_tetromino.x + translation.x * sign
-      sim_tetromino.y = @current_tetromino.y + translation.y * sign
+      sim_tetromino.x = @current_tetromino.x + (translation.x * sign)
+      sim_tetromino.y = @current_tetromino.y + (translation.y * sign)
 
       # Success if none of the simulated tetromino's minos are
       # overlapping the matrix, or out-of-bounds

@@ -17,8 +17,8 @@ class TetrisGame
       height = 449
 
       @args.outputs.sprites << {
-        x: @args.grid.w / 2 - width / 2,
-        y: @args.grid.h / 2 - height / 2,
+        x: (@args.grid.w / 2) - (width / 2),
+        y: (@args.grid.h / 2) - (height / 2),
         w: width,
         h: height,
         path: "sprites/controls/keyboard.png"

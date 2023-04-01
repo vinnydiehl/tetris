@@ -39,7 +39,7 @@ class TetrisGame
       play_sound_effect "score/#{sound}"
 
       # All Clear bonus
-      if @matrix.all? { |col| col.none? }
+      if @matrix.all?(&:none?)
         points += 400
         delay(30) { play_sound_effect "score/all_clear" }
       end
@@ -102,7 +102,7 @@ class TetrisGame
   # Sets the lines needed for the next level
   def set_lines_needed
     # If @lines_needed has gone into the negative, need to add it back to the new total
-    @lines_needed = @level * 5 + @lines_needed
+    @lines_needed = (@level * 5) + @lines_needed
   end
 
   def time_elapsed

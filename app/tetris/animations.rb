@@ -34,10 +34,10 @@ class TetrisGame
       # Convert to RGB:
 
       h_i = (h * 6).to_i
-      f = h * 6 - h_i
+      f = (h * 6) - h_i
       p = V * (1 - S)
-      q = V * (1 - f * S)
-      t = V * (1 - (1 - f) * S)
+      q = V * (1 - (f * S))
+      t = V * (1 - ((1 - f) * S))
 
       r, g, b =\
         case h_i
@@ -97,7 +97,7 @@ class TetrisGame
       attrs = {
         text: @countdown_state,
         x: @args.grid.w / 2,
-        y: @args.grid.h / 2 + 25,
+        y: (@args.grid.h / 2) + 25,
         size_enum: 4,
         alignment_enum: 1,
         r: 255,
@@ -167,7 +167,7 @@ class TetrisGame
           # then back in during the last
           orig_position.color[3] = [
             [(4 * translation / height_difference_px),
-             (4 - 4 * translation / height_difference_px)].min,
+             (4 - (4 * translation / height_difference_px))].min,
           1].min.lerp(255, GHOST_ALPHA)
 
           render_tetromino orig_position, y_translate: -translation,
@@ -285,7 +285,7 @@ class TetrisGame
               # This height check renders the next one up (hidden behind the border) so
               # that it slides down. It uses the pixel translation to render the next one
               # in only after it has slid down far enough that it is hidden behind the border
-              if color && y * MINO_SIZE - translation <= DISPLAY_HEIGHT
+              if color && (y * MINO_SIZE) - translation <= DISPLAY_HEIGHT
                 render_mino x, y, *color, y_translate: -translation
               end
             end
@@ -326,8 +326,8 @@ class TetrisGame
 
           shutter = {
             primitive_marker: :solid,
-            x: @args.grid.w / 2 - MATRIX_PX_WIDTH / 2,
-            y: MATRIX_Y0 + DISPLAY_HEIGHT - height - SHUTTER_HEIGHT * @closed_shutters.size,
+            x: (@args.grid.w / 2) - (MATRIX_PX_WIDTH / 2),
+            y: MATRIX_Y0 + DISPLAY_HEIGHT - height - (SHUTTER_HEIGHT * @closed_shutters.size),
             w: MATRIX_PX_WIDTH,
             h: height,
             r: r,

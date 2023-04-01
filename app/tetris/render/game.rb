@@ -52,7 +52,7 @@ class TetrisGame
     r, g, b = GRID_COLOR
 
     @args.outputs.primitives << 9.times.map do |n|
-      x = MATRIX_X0 + MINO_SIZE * (n + 1) - 1
+      x = MATRIX_X0 + (MINO_SIZE * (n + 1)) - 1
       {
         primitive_marker: :solid,
         x: x,
@@ -66,7 +66,7 @@ class TetrisGame
     end
 
     @args.outputs.primitives << 20.times.map do |n|
-      y = MATRIX_Y0 + MINO_SIZE * (n + 1) - 1
+      y = MATRIX_Y0 + (MINO_SIZE * (n + 1)) - 1
       {
         primitive_marker: :solid,
         x: MATRIX_X0,
@@ -130,8 +130,8 @@ class TetrisGame
   end
 
   def mino_px_position(matrix_x, matrix_y, size: MINO_SIZE)
-    [(1280 - (MATRIX_WIDTH * size)) / 2 + (matrix_x * size),
-     (720 - (MATRIX_HEIGHT * size)) / 2 - (PEEK_HEIGHT / 2) + (matrix_y * size)]
+    [((1280 - (MATRIX_WIDTH * size)) / 2) + (matrix_x * size),
+     ((720 - (MATRIX_HEIGHT * size)) / 2) - (PEEK_HEIGHT / 2) + (matrix_y * size)]
   end
 
   def render_matrix(matrix)
