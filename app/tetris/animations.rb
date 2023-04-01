@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 SHUTTER_HEIGHT = MINO_SIZE / 2
 SHUTTER_COUNT = (DISPLAY_HEIGHT / SHUTTER_HEIGHT).floor
 SHUTTER_ANIMATION_FRAMES = (4 / SHUTTER_COUNT).seconds
@@ -102,7 +104,7 @@ class TetrisGame
         alignment_enum: 1,
         r: 255,
         g: 255,
-        b: 255,
+        b: 255
       }
 
       animator.run(

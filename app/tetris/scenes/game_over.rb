@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TetrisGame
   def game_over_init
     set_music "game_over"

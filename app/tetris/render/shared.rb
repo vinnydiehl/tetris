@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class String
   # Creates a label primitive with the given options.
   #
@@ -72,10 +74,12 @@ class TetrisGame
   def render_corner_text(upper_left, lower_right, size: 20)
     @args.outputs.labels << [
       upper_left.label(PADDING, @args.grid.h - PADDING + 20, size: size),
-      lower_right.is_a?(Array) ?
+      if lower_right.is_a?(Array)
         lower_right.span_vertically(@args.grid.w - PADDING, PADDING + (32 * (lower_right.size - 1)),
-                                    32, size: 4, alignment: :right) :
+                                    32, size: 4, alignment: :right)
+      else
         lower_right.label(@args.grid.w - PADDING, PADDING, size: 4, alignment: :right)
+      end
     ]
   end
 

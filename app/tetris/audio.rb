@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TetrisGame
   # Sets the background music. In cases where there is an intro or fade-in,
   # use 2 arguments; the first one will play once, then transition immediately
@@ -17,20 +19,20 @@ class TetrisGame
 
   # Handles volume setting and the looping behavior described for #set_music
   def music_tick
-    if @args.audio[:music]
-      @args.audio[:music][:gain] = @music_enabled ? @volume : 0
+    return unless @args.audio[:music]
 
-      # Hack to get the intro to transition into the looping part smoothly. This was
-      # originally set as simply:
-      #
-      #   @args.audio[:music] ||= @music_buffer
-      #
-      # at the very beginning of this method, but it was causing a 1 frame delay which
-      # was quite noticeable. This switches the music over same-frame.
-      if !@args.audio[:music][:looping] &&
-         @args.audio[:music][:playtime].round(2) >= @args.audio[:music][:length].round(2)
-        @args.audio[:music] = @music_buffer
-      end
+    @args.audio[:music][:gain] = @music_enabled ? @volume : 0
+
+    # Hack to get the intro to transition into the looping part smoothly. This was
+    # originally set as simply:
+    #
+    #   @args.audio[:music] ||= @music_buffer
+    #
+    # at the very beginning of this method, but it was causing a 1 frame delay which
+    # was quite noticeable. This switches the music over same-frame.
+    if !@args.audio[:music][:looping] &&
+       @args.audio[:music][:playtime].round(2) >= @args.audio[:music][:length].round(2)
+      @args.audio[:music] = @music_buffer
     end
   end
 

@@ -1,4 +1,6 @@
-SCENES = %w[main_menu pause controls game game_over]
+# frozen_string_literal: true
+
+SCENES = %w[main_menu pause controls game game_over].freeze
 
 %w[enum_utils bezier].each { |f| require "lib/animation/#{f}.rb" }
 

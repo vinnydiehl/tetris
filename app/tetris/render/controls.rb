@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TetrisGame
   def render_controls
     render_background
