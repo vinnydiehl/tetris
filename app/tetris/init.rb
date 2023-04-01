@@ -2,7 +2,9 @@ class TetrisGame
   def initialize(args)
     @args = args
 
+    # Gain value, 0 to 1
     @volume = 1
+    @music_enabled = true
 
     @scene_stack = []
     set_scene :main_menu

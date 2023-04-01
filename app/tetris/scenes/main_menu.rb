@@ -21,6 +21,11 @@ class TetrisGame
       set_scene :game
     end
 
+    if inputs_any? kb: :m, c1: :x
+      play_sound_effect "menus/action"
+      @music_enabled = !@music_enabled
+    end
+
     @selector_buttons.each do |button|
       # We're going to be pulsing the arrows white on some actions, this makes it fade back.
       # Doing this before setting bright alpha so there is no flickering

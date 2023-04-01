@@ -18,6 +18,8 @@ class TetrisGame
       play_sound_effect "menus/action"
       set_volume 100
       set_scene :game
+    elsif inputs_any? kb: :m, c1: :x
+      @music_enabled = !@music_enabled
     elsif l_r_held?
       # Main menu
       play_sound_effect "menus/action"
