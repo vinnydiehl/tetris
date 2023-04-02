@@ -16,7 +16,7 @@ class TetrisGame
     if @input_timeout < 0 && inputs_any?(kb: :space, c1: :a)
       play_sound_effect "menus/action"
       set_scene :game
-    elsif l_r_held?
+    elsif l_r_held? || @kb_inputs.backspace
       # Main menu
       play_sound_effect "menus/action"
       set_scene :main_menu

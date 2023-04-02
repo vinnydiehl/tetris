@@ -25,7 +25,7 @@ class TetrisGame
       # Toggle music
       play_sound_effect "menus/action"
       @music_enabled = !@music_enabled
-    elsif l_r_held?
+    elsif l_r_held? || @kb_inputs.backspace
       # Main menu
       play_sound_effect "menus/action"
       set_volume 100
