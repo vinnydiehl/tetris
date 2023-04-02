@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   # @return [Boolean] whether or not lock down has initiated on the current tetromino
   def locking_down?

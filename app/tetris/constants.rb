@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 FPS = 60
 
 # Padding around the edges of the menus

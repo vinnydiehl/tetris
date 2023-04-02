@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # The tetronimos' minos are represented as square 2D arrays.
 # They are rotated around their centers.
 SHAPES = [

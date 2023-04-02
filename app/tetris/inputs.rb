@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   def inputs_any?(**inputs)
     # Support for either single or array input for the value

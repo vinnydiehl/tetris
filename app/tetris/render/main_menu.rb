@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 ARROW_ALPHA = 100
 ARROW_BRIGHT_ALPHA = 200
 

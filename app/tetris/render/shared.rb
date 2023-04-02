@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class String
   # Creates a label primitive with the given options.
   #

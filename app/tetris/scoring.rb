@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   def check_line_clear
     @lines_cleared_this_frame = []

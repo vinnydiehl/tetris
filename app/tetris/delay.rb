@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   # Delay the execution of +block+ by +frames+. The code in the block will
   # be placed in a buffer with a timeout, and all of the block will be

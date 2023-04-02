@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   # Sets the background music. In cases where there is an intro or fade-in,
   # use 2 arguments; the first one will play once, then transition immediately

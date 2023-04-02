@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Gravity slowly increases as level increases.
 # First index nil since levels start at 1
 GRAVITY_VALUES = [

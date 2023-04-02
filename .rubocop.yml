@@ -18,6 +18,10 @@ Style/GuardClause:
 Style/RedundantFileExtensionInRequire:
   Enabled: false
 
+# Not DragonRuby supported
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
 Metrics/ClassLength:
   Enabled: false
 

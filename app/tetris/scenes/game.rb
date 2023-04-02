@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   def game_init
     # This gets played at the end of the countdown animation

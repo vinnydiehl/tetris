@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   def main_menu_init
     set_music "main_menu"

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TetrisGame
   def pause_init
     play_sound_effect "menus/pause"
