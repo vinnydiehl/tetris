@@ -231,7 +231,7 @@ class TetrisGame
       "SPM: #{score_per_minute}",
       "LPM: #{lines_per_minute}",
       "BRN: #{@burnt_lines}",
-      @tetris_lines > 0 ? "TRT: #{tetris_rate}" : nil
+      @clears[:tetris] > 0 ? "TRT: #{tetris_rate}" : nil
     ].span_vertically(268, 440, 40, size: 2)
 
     if @back_to_back > 0
@@ -249,31 +249,32 @@ class TetrisGame
   end
 
   def render_clears
-    @args.outputs.labels << "Clears".label(110, 635, size: 4, alignment: :center)
+    @args.outputs.labels << "Clears".label(110, 655, size: 4, alignment: :center)
 
     @args.outputs.labels << [
-      "Single: ",
-      "Double: ",
-      "Triple: ",
-      "Tetris: "
-    ].span_vertically(50, 590, 40, size: 0.25)
+      "Single: #{@clears[:single]}",
+      "Double: #{@clears[:double]}",
+      "Triple: #{@clears[:triple]}",
+      "Tetris: #{@clears[:tetris]}",
+      "All Clear: #{@clears[:all_clear]}"
+    ].span_vertically(50, 610, 40, size: 0.25)
 
-    @args.outputs.labels << "T-Spins".label(110, 435, size: 3, alignment: :center)
-
-    @args.outputs.labels << [
-      "T-Spin: ",
-      "Single: ",
-      "Double: ",
-      "Triple: "
-    ].span_vertically(50, 390, 40, size: 0.25)
-
-    @args.outputs.labels << "Mini".label(110, 230, size: 3, alignment: :center)
+    @args.outputs.labels << "T-Spins".label(110, 415, size: 3, alignment: :center)
 
     @args.outputs.labels << [
-      "Mini: ",
-      "Single: ",
-      "Double: ",
-    ].span_vertically(50, 190, 40, size: 0.25)
+      "T-Spin: #{@clears[:t_spin]}",
+      "Single: #{@clears[:t_spin_single]}",
+      "Double: #{@clears[:t_spin_double]}",
+      "Triple: #{@clears[:t_spin_triple]}"
+    ].span_vertically(50, 370, 40, size: 0.25)
+
+    @args.outputs.labels << "Mini".label(110, 210, size: 3, alignment: :center)
+
+    @args.outputs.labels << [
+      "Mini: #{@clears[:mini_t_spin]}",
+      "Single: #{@clears[:mini_t_spin_single]}",
+      "Double: #{@clears[:mini_t_spin_double]}",
+    ].span_vertically(50, 170, 40, size: 0.25)
   end
 
   def render_metrics

@@ -26,8 +26,14 @@ class TetrisGame
     # @lines does not refer to the actual amount of lines cleared; they may be
     # awarded as bonuses. This is the actual amount cleared, for statistics purposes
     @actual_lines_cleared = 0
-    @tetris_lines = 0
     @burnt_lines = 0
+
+    @clears =\
+      %i[single double triple tetris all_clear
+         t_spin t_spin_single t_spin_double t_spin_triple
+         mini_t_spin mini_t_spin_single mini_t_spin_double].map do |type|
+        { type => 0 }
+      end.inject(&:merge)
 
     @back_to_back = 0
     @highest_streak = 0

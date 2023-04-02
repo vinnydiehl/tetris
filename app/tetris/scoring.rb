@@ -22,25 +22,29 @@ class TetrisGame
     lines_cleared = @lines_cleared_this_frame.size
 
     if lines_cleared > 0 || @t_spin
-      points, sound = {
-        [:full, 3] => [1600, "t_spin_triple"],
-        [:full, 2] => [1200, "t_spin_double"],
-        [:full, 1] => [800,  "t_spin_single"],
-        [:full, 0] => [400,  "t_spin"],
-        [:mini, 2] => [500,  "t_spin_double"],
-        [:mini, 1] => [200,  "t_spin_single"],
-        [:mini, 0] => [100,  "t_spin"],
-        [nil,   4] => [800,  "tetris"],
-        [nil,   3] => [500,  "triple"],
-        [nil,   2] => [300,  "double"],
-        [nil,   1] => [100,  "single"]
+      points, type = {
+        [:full, 3] => [1600, :t_spin_triple],
+        [:full, 2] => [1200, :t_spin_double],
+        [:full, 1] => [800,  :t_spin_single],
+        [:full, 0] => [400,  :t_spin],
+        [:mini, 2] => [500,  :mini_t_spin_double],
+        [:mini, 1] => [200,  :mini_t_spin_single],
+        [:mini, 0] => [100,  :mini_t_spin],
+        [nil,   4] => [800,  :tetris],
+        [nil,   3] => [500,  :triple],
+        [nil,   2] => [300,  :double],
+        [nil,   1] => [100,  :single]
       }[[@t_spin, lines_cleared]]
 
-      play_sound_effect "score/#{sound}"
+      @clears[type] += 1
+
+      # Mini T-Spins make the same sound as regular ones
+      play_sound_effect "score/#{type.to_s.delete 'mini_'}"
 
       # All Clear bonus
       if @matrix.all?(&:none?)
         points += 400
+        @clears[:all_clear] += 1
         delay(30) { play_sound_effect "score/all_clear" }
       end
 
@@ -120,7 +124,7 @@ class TetrisGame
 
   def tetris_rate
     @actual_lines_cleared == 0 ? 0 :
-      format_percent(@tetris_lines / (@actual_lines_cleared - @t_spin_lines_cleared) * 100)
+      format_percent(@clears[:tetris] * 4 / (@actual_lines_cleared - @t_spin_lines_cleared) * 100)
   end
 
   def score_per_minute

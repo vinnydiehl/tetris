@@ -87,6 +87,11 @@ class TetrisGame
   end
 
   def render_stats
+    # TODO: Show all clears and metrics
+
+    t_spins_scored = @clears.select { |k, _| k.to_s.start_with? "t_spin" }.values.inject(:+)
+    mini_t_spins_scored = @clears.select { |k, _| k.to_s.start_with? "mini_t_spin" }.values.inject(:+)
+
     @args.outputs.labels << [
       "Time: #{time_elapsed}",
       "Score: #{@score}",
@@ -96,8 +101,8 @@ class TetrisGame
       "LPM: #{lines_per_minute}",
       "BRN: #{@burnt_lines}",
       "TRT: #{tetris_rate}",
-      "Tetrises: #{(@tetris_lines / 4).floor}",
-      "T-Spins: #{@t_spins_scored}#{@mini_t_spins_scored > 0 ? " (+ #{@mini_t_spins_scored} mini)" : ''}",
+      "Tetrises: #{@clears[:tetris]}",
+      "T-Spins: #{t_spins_scored}#{mini_t_spins_scored > 0 ? " (+ #{mini_t_spins_scored} mini)" : ''}",
       "Best Streak: #{@highest_streak}"
     ].span_vertically(@args.grid.w / 2, 500, 30, alignment: :center)
   end
