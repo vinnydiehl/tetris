@@ -86,8 +86,14 @@ class TetrisGame
 
   def handle_input
     if inputs_any? kb: %i[escape], c1: :start
-      set_scene :pause, false
-      return
+      if !$gtk.production? && @timer > 0 && (l_r_held? || @kb_inputs_held.alt)
+        # Freeze mode (development only)
+        @game_started = !@game_started
+      else
+        # Pause
+        set_scene :pause, false
+        return
+      end
     end
 
     if @args.inputs.left != @args.inputs.right
