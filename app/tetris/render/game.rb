@@ -16,6 +16,8 @@ class TetrisGame
     render_held if @held_tetromino
 
     render_score
+    render_clears
+    render_metrics
 
     animation_tick
 
@@ -244,5 +246,50 @@ class TetrisGame
         (@new_best_set ? "New Best!" : "Best Streak: #{@highest_streak}").
           label(355, 98, alignment: :center)
     end
+  end
+
+  def render_clears
+    @args.outputs.labels << "Clears".label(110, 635, size: 4, alignment: :center)
+
+    @args.outputs.labels << [
+      "Single: ",
+      "Double: ",
+      "Triple: ",
+      "Tetris: "
+    ].span_vertically(50, 590, 40, size: 0.25)
+
+    @args.outputs.labels << "T-Spins".label(110, 435, size: 3, alignment: :center)
+
+    @args.outputs.labels << [
+      "T-Spin: ",
+      "Single: ",
+      "Double: ",
+      "Triple: "
+    ].span_vertically(50, 390, 40, size: 0.25)
+
+    @args.outputs.labels << "Mini".label(110, 230, size: 3, alignment: :center)
+
+    @args.outputs.labels << [
+      "Mini: ",
+      "Single: ",
+      "Double: ",
+    ].span_vertically(50, 190, 40, size: 0.25)
+  end
+
+  def render_metrics
+    @args.outputs.labels << "Metrics".label(1170, 575, size: 4, alignment: :center)
+
+    @args.outputs.labels << [
+      "Accomodation: ",
+      "Slope: ",
+      "Bumpiness: ",
+      "Max Height: ",
+      "Min Height: ",
+      "Drought: ",
+      "Pause: ",
+      "Surplus: ",
+      "Readiness: ",
+      "Presses: "
+    ].span_vertically(1090, 530, 40, size: 0.25)
   end
 end
