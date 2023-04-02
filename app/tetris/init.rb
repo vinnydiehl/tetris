@@ -14,7 +14,9 @@ class TetrisGame
 
   def tick
     @kb_inputs = @args.inputs.keyboard.key_down
+    @kb_inputs_held = @args.inputs.keyboard.key_held
     @c1_inputs = @args.inputs.controller_one.key_down
+    @c1_inputs_held = @args.inputs.controller_one.key_held
 
     music_tick
 

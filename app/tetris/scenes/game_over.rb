@@ -14,6 +14,7 @@ class TetrisGame
   def game_over_tick
     @input_timeout -= 1
     if @input_timeout < 0 && inputs_any?(kb: :space, c1: :a)
+      # Play again
       play_sound_effect "menus/action"
       set_scene :game
     elsif l_r_held? || @kb_inputs.backspace
