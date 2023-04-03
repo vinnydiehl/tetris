@@ -212,6 +212,8 @@ class TetrisGame
       @hold_available = true
     end
 
+    @metrics[:presses] = 0
+
     @spawning = false
   end
 

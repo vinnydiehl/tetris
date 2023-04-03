@@ -35,6 +35,8 @@ class TetrisGame
         { type => 0 }
       end.inject(&:merge)
 
+    init_metrics
+
     @back_to_back = 0
     @highest_streak = 0
     @new_best_set = false
@@ -82,6 +84,7 @@ class TetrisGame
 
     check_line_clear
     handle_scoring
+    calculate_metrics if @metrics_totals[:drops] > 0
 
     if !@current_tetromino && !@spawning &&
        %i[line_clear line_fall].none? { |a| animating? a }
@@ -135,10 +138,14 @@ class TetrisGame
       if @das_timeout < 0
         @as_frame_timer = (@as_frame_timer - 1) % 3
       end
+
+      @metrics[:presses] += 1 unless @holding_dir || !@current_tetromino
+      @holding_dir = true
     else
       @last_direction = nil
       @das_timeout = DAS
       @as_frame_timer = 0
+      @holding_dir = false
     end
 
     if @current_tetromino
@@ -148,26 +155,39 @@ class TetrisGame
           hold_current_tetromino
         else
           play_sound_effect "tetromino/hold_fail"
+
+          # Failed hold counts as a button press, sorry ;)
+          @metrics[:presses] += 1
         end
       else
         if inputs_any?(kb: :space, c1: %i[directional_up a]) && @game_started
           begin_animation :hard_drop unless current_tetromino_colliding_y?
           @current_tetromino.hard_dropped = true
           @current_tetromino.last_movement = :gravity
+          @metrics[:presses] += 1
         end
 
-        @current_tetromino.soft_dropping = @args.inputs.down ? true : false
+        if @args.inputs.down
+          @current_tetromino.soft_dropping = true
+          @metrics[:presses] += 1 unless @holding_down
+          @holding_down = true
+        else
+          @current_tetromino.soft_dropping = false
+          @holding_down = false
+        end
 
         calculate_gravity
 
         if inputs_any? kb: %i[up x], c1: %i[r1 r2]
           play_sound_effect "tetromino/rotate"
           rotate_current_tetromino(:cw)
+          @metrics[:presses] += 1
         end
 
         if inputs_any? kb: %i[control z], c1: %i[l1 l2]
           play_sound_effect "tetromino/rotate"
           rotate_current_tetromino(:ccw)
+          @metrics[:presses] += 1
         end
       end
     end

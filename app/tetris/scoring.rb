@@ -79,9 +79,7 @@ class TetrisGame
       # This is saved so that lines cleared from T-Spins don't hurt TRT
       @t_spin_lines_cleared += lines_cleared if @t_spin
 
-      if lines_cleared == 4
-        @tetris_lines += 4
-      elsif !@t_spin
+      if lines_cleared < 4 && !@t_spin
         @burnt_lines += lines_cleared
       end
 

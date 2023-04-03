@@ -280,17 +280,9 @@ class TetrisGame
   def render_metrics
     @args.outputs.labels << "Metrics".label(1170, 575, size: 4, alignment: :center)
 
-    @args.outputs.labels << [
-      "Accomodation: ",
-      "Slope: ",
-      "Bumpiness: ",
-      "Max Height: ",
-      "Min Height: ",
-      "Drought: ",
-      "Pause: ",
-      "Surplus: ",
-      "Readiness: ",
-      "Presses: "
-    ].span_vertically(1090, 530, 40, size: 0.25)
+    @args.outputs.labels << METRICS.map do |metric|
+      value = @metrics[metric]
+      "#{metric.to_s.split('_').map(&:capitalize).join ' '}: #{value.is_a?(Float) ? '%0.01f' % value : value}"
+    end.span_vertically(1090, 530, 40, size: 0.25)
   end
 end
