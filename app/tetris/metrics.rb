@@ -88,19 +88,19 @@ class TetrisGame
     end
 
     well_open = nil
-    well_x = nil
+    @tetris_ready_well_x = nil
     @tetris_ready = false
 
     (MATRIX_HEIGHT - 1).downto(3).each do |y|
       # Find the first row with a well in it, and save the x column
-      next unless well_x = find_row_well(y)
+      next unless @tetris_ready_well_x = find_row_well(y)
       @tetris_ready =
         # If the well extends 3 rows below the one we found, and...
-        ((y - 3)..(y - 1)).all? { |y2| find_row_well(y2) == well_x } &&
+        ((y - 3)..(y - 1)).all? { |y2| find_row_well(y2) == @tetris_ready_well_x } &&
         # ...if the well is open at the top...
-        @heights[well_x] < y &&
+        @heights[@tetris_ready_well_x] < y &&
         # ...and closed at the bottom, we're Tetris ready!
-        (y == 3 || @matrix[well_x][y - 4])
+        (y == 3 || @matrix[@tetris_ready_well_x][y - 4])
 
       break if @tetris_ready
     end
@@ -147,18 +147,6 @@ class TetrisGame
       end
     elsif @tetris_ready
       start_drought
-
-      # Surplus is the blocks that would remain if the Tetris were to be made immediately.
-      # To find this, we need to find the bottom of the well.
-      well_bottom = @matrix[well_x].find_index(&:nil?) || 0
-
-      @metrics[:surplus] = @matrix.map do |col|
-        (col[-1...well_bottom] + (col[(well_bottom + 4)..-1] || [])).compact.size
-      end.inject(:+)
-
-      @metrics_totals[:tetris_readys] += 1
-      @metrics_totals[:readiness] += @metrics[:readiness]
-      @metrics_totals[:surplus] += @metrics[:surplus]
     end
   end
 
@@ -167,13 +155,26 @@ class TetrisGame
     @metrics[:drought] = 0
     @metrics_totals[:droughts] += 1
 
+    # We don't want to run some of this logic if we're only resetting the drought
+    # count due to an I piece spawn
     unless spawn_reset
       if still_ready
-        @metrics_totals[:tetris_readys] += 1
         @metrics[:readiness] = 0
       else
         @metrics[:readiness] = @metrics_totals[:drops] - @last_tetris
       end
+
+      # Surplus is the blocks that would remain if the Tetris were to be made immediately.
+      # To find this, we need to find the bottom of the well.
+      well_bottom = @matrix[@tetris_ready_well_x].find_index(&:nil?) || 0
+
+      @metrics[:surplus] = @matrix.map do |col|
+        (col[-1...well_bottom] + (col[(well_bottom + 4)..-1] || [])).compact.size
+      end.inject(:+)
+
+      @metrics_totals[:tetris_readys] += 1
+      @metrics_totals[:readiness] += @metrics[:readiness]
+      @metrics_totals[:surplus] += @metrics[:surplus]
     end
 
     # Force this otherwise it will take an extra drop to register in the UI
