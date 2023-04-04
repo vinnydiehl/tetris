@@ -87,12 +87,11 @@ class TetrisGame
   end
 
   def render_stats
-    # TODO: Show all clears and metrics
-
     t_spins_scored = @clears.select { |k, _| k.to_s.start_with? "t_spin" }.values.inject(:+)
     mini_t_spins_scored = @clears.select { |k, _| k.to_s.start_with? "mini_t_spin" }.values.inject(:+)
 
-    @args.outputs.labels << [
+    # Center labels
+    labels = [
       "Time: #{time_elapsed}",
       "Score: #{@score}",
       "Lines: #{@lines} (#{@actual_lines_cleared} actual)",
@@ -101,10 +100,58 @@ class TetrisGame
       "LPM: #{lines_per_minute}",
       "BRN: #{@burnt_lines}",
       "TRT: #{tetris_rate}",
-      "Tetrises: #{@clears[:tetris]}",
-      "T-Spins: #{t_spins_scored}#{mini_t_spins_scored > 0 ? " (+ #{mini_t_spins_scored} mini)" : ''}",
       "Best Streak: #{@highest_streak}"
-    ].span_vertically(@args.grid.w / 2, 500, 30, alignment: :center)
+    ].span_vertically(@args.grid.w / 2, 480, 30, size: 3, alignment: :center)
+
+    # Clears table
+
+    labels << "Lines".label(120, 460, size: 5, alignment: :center)
+    labels << [
+      "Single: #{@clears[:single]}",
+      "Double: #{@clears[:double]}",
+      "Triple: #{@clears[:triple]}",
+      "Tetris: #{@clears[:tetris]}",
+      "All Clear: #{@clears[:all_clear]}"
+    ].span_vertically(120, 410, 30, size: 0.2, alignment: :center)
+
+    labels << "T-Spins".label(250, 460, size: 5, alignment: :center)
+    labels << [
+      "T-Spin: #{@clears[:t_spin]}",
+      "Single: #{@clears[:t_spin_single]}",
+      "Double: #{@clears[:t_spin_double]}",
+      "Triple: #{@clears[:t_spin_triple]}"
+    ].span_vertically(250, 410, 30, size: 0.2, alignment: :center)
+
+    labels << "Mini".label(380, 460, size: 5, alignment: :center)
+    labels << [
+      "Mini: #{@clears[:mini_t_spin]}",
+      "Single: #{@clears[:mini_t_spin_single]}",
+      "Double: #{@clears[:mini_t_spin_double]}"
+    ].span_vertically(380, 410, 30, size: 0.2, alignment: :center)
+
+    # Metrics averages (only displayed after first drop)
+
+    if @metrics_totals[:drops] > 0
+      labels << "Averages".label(1030, 460, size: 5, alignment: :center)
+
+      labels << [
+        "Accomodation: %.01f" % (@metrics_totals[:accomodation] / @metrics_totals[:drops]),
+        "Slope: %.01f" % (@metrics_totals[:slope] / @metrics_totals[:drops]),
+        "Bumpiness: %.01f" % (@metrics_totals[:bumpiness] / @metrics_totals[:drops]),
+        "Max Height: %.01f" % (@metrics_totals[:max_height] / @metrics_totals[:drops]),
+        "Min Height: %.01f" % (@metrics_totals[:min_height] / @metrics_totals[:drops])
+      ].span_vertically(940, 410, 30, size: 0.2, alignment: :center)
+
+      labels << [
+        "Presses: %.01f" % (@metrics_totals[:presses] / @metrics_totals[:drops]),
+        "Drought: #{@metrics_totals[:droughts].zero? ? 'N/A' : '%.01f' % (@metrics_totals[:drought] / @metrics_totals[:droughts])}",
+        "Pause: #{@metrics_totals[:pauses].zero? ? 'N/A' : '%.01f' % (@metrics_totals[:pause] / @metrics_totals[:pauses])}",
+        "Surplus: #{@metrics_totals[:tetris_readys].zero? ? 'N/A' : '%.01f' % (@metrics_totals[:surplus] / @metrics_totals[:tetris_readys])}",
+        "Readiness: #{@metrics_totals[:tetris_readys].zero? ? 'N/A' : '%.01f' % (@metrics_totals[:readiness] / @metrics_totals[:tetris_readys])}"
+      ].span_vertically(1140, 410, 30, size: 0.2, alignment: :center)
+    end
+
+    @args.outputs.labels << labels
   end
 
   def controller_connected?

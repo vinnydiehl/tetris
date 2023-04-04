@@ -247,32 +247,31 @@ class TetrisGame
   end
 
   def render_clears
-    @args.outputs.labels << "Clears".label(110, 655, size: 4, alignment: :center)
-
-    @args.outputs.labels << [
+    labels = ["Clears".label(110, 655, size: 4, alignment: :center)]
+    labels << [
       "Single: #{@clears[:single]}",
       "Double: #{@clears[:double]}",
       "Triple: #{@clears[:triple]}",
       "Tetris: #{@clears[:tetris]}",
       "All Clear: #{@clears[:all_clear]}"
-    ].span_vertically(50, 610, 40, size: 0.25)
+    ].span_vertically(50, 610, 40, size: 0.2)
 
-    @args.outputs.labels << "T-Spins".label(110, 415, size: 3, alignment: :center)
-
-    @args.outputs.labels << [
+    labels << "T-Spins".label(110, 415, size: 3, alignment: :center)
+    labels << [
       "T-Spin: #{@clears[:t_spin]}",
       "Single: #{@clears[:t_spin_single]}",
       "Double: #{@clears[:t_spin_double]}",
       "Triple: #{@clears[:t_spin_triple]}"
-    ].span_vertically(50, 370, 40, size: 0.25)
+    ].span_vertically(50, 370, 40, size: 0.2)
 
-    @args.outputs.labels << "Mini".label(110, 210, size: 3, alignment: :center)
-
-    @args.outputs.labels << [
+    labels << "Mini".label(110, 210, size: 3, alignment: :center)
+    labels << [
       "Mini: #{@clears[:mini_t_spin]}",
       "Single: #{@clears[:mini_t_spin_single]}",
-      "Double: #{@clears[:mini_t_spin_double]}",
-    ].span_vertically(50, 170, 40, size: 0.25)
+      "Double: #{@clears[:mini_t_spin_double]}"
+    ].span_vertically(50, 170, 40, size: 0.2)
+
+    @args.outputs.labels << labels
   end
 
   def render_metrics

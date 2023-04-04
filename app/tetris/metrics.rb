@@ -168,7 +168,6 @@ class TetrisGame
     @metrics_totals[:droughts] += 1
 
     unless spawn_reset
-
       if still_ready
         @metrics_totals[:tetris_readys] += 1
         @metrics[:readiness] = 0
