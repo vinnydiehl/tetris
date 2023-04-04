@@ -169,7 +169,9 @@ class TetrisGame
       well_bottom = @matrix[@tetris_ready_well_x].find_index(&:nil?) || 0
 
       @metrics[:surplus] = @matrix.map do |col|
-        (col[-1...well_bottom] + (col[(well_bottom + 4)..-1] || [])).compact.size
+        # This ugliness is a hack fix for nil errors. Still counts surplus properly as far as
+        # I can tell. Maybe come back and figure out what's actually going on here.
+        ((col[-1...well_bottom] || []) + (col[(well_bottom + 4)..-1] || []))&.compact&.size || 0
       end.inject(:+)
 
       @metrics_totals[:tetris_readys] += 1
