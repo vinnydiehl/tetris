@@ -1,5 +1,6 @@
 SCENES = %w[main_menu pause controls game game_over].freeze
 
+%w[object].each { |f| require "lib/core_ext/#{f}.rb" }
 %w[enum_utils bezier].each { |f| require "lib/animation/#{f}.rb" }
 
 %w[constants init inputs audio delay metrics animations

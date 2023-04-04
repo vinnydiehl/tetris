@@ -26,12 +26,10 @@ class TetrisGame
         @matrix[x][y] = @current_tetromino.color if mino
       end
 
-      # For tracking metrics averages. Every time a tetromino is dropped, the
-      # metrics for that frame are added to a total, and the drops are counted.
-      @metrics_totals[:drops] += 1
-      %i[accomodation slope bumpiness max_height min_height presses].each do |metric|
-        @metrics_totals[metric] += @metrics[metric]
-      end
+      check_line_clear
+      handle_scoring
+
+      run_drop_metrics
 
       @current_tetromino = nil
     end

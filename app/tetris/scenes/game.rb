@@ -82,9 +82,7 @@ class TetrisGame
       end
     end
 
-    check_line_clear
-    handle_scoring
-    calculate_metrics if @metrics_totals[:drops] > 0
+    run_frame_metrics if @metrics_totals[:drops] > 0
 
     if !@current_tetromino && !@spawning &&
        %i[line_clear line_fall].none? { |a| animating? a }

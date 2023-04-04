@@ -78,10 +78,10 @@ class TetrisGame
     @animations.delete name
   end
 
-  # @param name [Symbol] name of the animation
-  # @return [Boolean] whether or not the animation is currently running
-  def animating?(name)
-    @animations.keys.include? name
+  # @param names [Array] name(s) of animations to check
+  # @return [Boolean] whether or not any of the animations are currently running
+  def animating?(*names)
+    names.any? { |name| @animations.keys.include? name }
   end
 
   def animation_tick
@@ -221,7 +221,7 @@ class TetrisGame
 
   def animate_line_clear
     @animations[:line_clear] ||= Enumerator.new do |animator|
-      colors = @animation_matrix.clone
+      colors = @animation_matrix.deep_dup
 
       # Save the Y-values of the lines that were cleared, then reset this
       @lines_cleared_animating = @lines_cleared_this_frame.clone
@@ -232,7 +232,7 @@ class TetrisGame
         eease(0.25.seconds, Bezier.ease(0.41, 0.79, 0.78, 0.97)) do |t|
           MATRIX_WIDTH.times do |x|
             @lines_cleared_animating.each do |y|
-              @animation_matrix[x][y] = colors[x][y].map { |value| t.lerp(value, 255) }
+              @animation_matrix[x][y] = colors[x][y]&.map { |value| t.lerp(value, 255) }
             end
           end
         end +
@@ -251,6 +251,14 @@ class TetrisGame
       @animations[:line_clear].next
       render_matrix @animation_matrix
     rescue StopIteration
+      @lines_cleared_animating.reverse_each do |y|
+        @animation_matrix.each do |col|
+          col[y] = nil
+        end
+      end
+
+      render_matrix @animation_matrix
+
       end_animation :line_clear
       begin_animation :line_fall
     end
@@ -262,7 +270,7 @@ class TetrisGame
 
       animator.run(
         eease(0.5.seconds, Bezier.ease(0.34, 0.06, 0.80, 0.81)) do |t|
-          @matrix.each_with_index do |col, x|
+          @animation_matrix.each_with_index do |col, x|
             col.each_with_index do |color, y|
               # Get translation from the original position in pixels; this is calculated by
               # multiplying the number of lines that were cleared beneath that line by
@@ -298,13 +306,6 @@ class TetrisGame
       @animations[:line_fall].next
     rescue StopIteration
       end_animation :line_fall
-
-      # Clear the lines from the actual matrix
-      @lines_cleared_animating.reverse_each do |y|
-        @matrix.each do |col|
-          col.delete_at y
-        end
-      end
 
       # This needs to be rendered here or it gets dropped for a frame due to the
       # rendering order. They can't be switched or it drops a frame on the line clear

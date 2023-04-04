@@ -5,15 +5,19 @@ class TetrisGame
     MATRIX_HEIGHT.times.each do |y|
       if @matrix.all? { |col| col[y] }
         @lines_cleared_this_frame << y
-
-        @matrix.each_with_index do |col, x|
-          @animation_matrix[x][y] = col[y]
-          col[y] = nil
-        end
       end
     end
 
-    if @lines_cleared_this_frame.size > 0 && !animating?(:line_clear)
+    if @lines_cleared_this_frame.size > 0
+      @animation_matrix = @matrix.deep_dup
+
+      # Clear the lines from the actual matrix now, so that metrics can run accurately
+      @lines_cleared_this_frame.reverse_each do |y|
+        @matrix.each do |col|
+          col.delete_at y
+        end
+      end
+
       begin_animation :line_clear
     end
   end
@@ -21,71 +25,75 @@ class TetrisGame
   def handle_scoring
     lines_cleared = @lines_cleared_this_frame.size
 
-    if lines_cleared > 0 || @t_spin
-      points, type = {
-        [:full, 3] => [1600, :t_spin_triple],
-        [:full, 2] => [1200, :t_spin_double],
-        [:full, 1] => [800,  :t_spin_single],
-        [:full, 0] => [400,  :t_spin],
-        [:mini, 2] => [500,  :mini_t_spin_double],
-        [:mini, 1] => [200,  :mini_t_spin_single],
-        [:mini, 0] => [100,  :mini_t_spin],
-        [nil,   4] => [800,  :tetris],
-        [nil,   3] => [500,  :triple],
-        [nil,   2] => [300,  :double],
-        [nil,   1] => [100,  :single]
-      }[[@t_spin, lines_cleared]]
+    return unless  lines_cleared > 0 || @t_spin
 
-      @clears[type] += 1
+    points, type = {
+      [:full, 3] => [1600, :t_spin_triple],
+      [:full, 2] => [1200, :t_spin_double],
+      [:full, 1] => [800,  :t_spin_single],
+      [:full, 0] => [400,  :t_spin],
+      [:mini, 2] => [500,  :mini_t_spin_double],
+      [:mini, 1] => [200,  :mini_t_spin_single],
+      [:mini, 0] => [100,  :mini_t_spin],
+      [nil,   4] => [800,  :tetris],
+      [nil,   3] => [500,  :triple],
+      [nil,   2] => [300,  :double],
+      [nil,   1] => [100,  :single]
+    }[[@t_spin, lines_cleared]]
 
-      # Mini T-Spins make the same sound as regular ones
-      play_sound_effect "score/#{type.to_s.delete 'mini_'}"
+    @clears[type] += 1
 
-      # All Clear bonus
-      if @matrix.all?(&:none?)
-        points += 400
-        @clears[:all_clear] += 1
-        delay(30) { play_sound_effect "score/all_clear" }
-      end
+    # Mini T-Spins make the same sound as regular ones
+    play_sound_effect "score/#{type.to_s.sub 'mini_', ''}"
 
-      # Process back-to-back bonus. A single, double, or triple
-      # line clear will end a back-to-back streak
-      if @t_spin || lines_cleared == 4
-        points *= 1.5 if @back_to_back > 0
-        @back_to_back += 1
-
-        if @back_to_back > @highest_streak
-          @highest_streak = @back_to_back
-          @new_best_set = true
-        end
-      else
-        @back_to_back = 0
-        @new_best_set = false
-      end
-
-      @score += (points * @level).floor
-
-      lines_rewarded = (points / 100).floor
-      @lines += lines_rewarded
-      @lines_needed -= lines_rewarded
-
-      check_level
-
-      # Note that lines_cleared was never directly added to @lines,
-      # instead being processed along with the score. We do need to save some
-      # more data before we get rid of it:
-      @actual_lines_cleared += lines_cleared
-
-      # This is saved so that lines cleared from T-Spins don't hurt TRT
-      @t_spin_lines_cleared += lines_cleared if @t_spin
-
-      if lines_cleared < 4 && !@t_spin
-        @burnt_lines += lines_cleared
-      end
-
-      # Reset this for next frame; @lines_cleared_this_frame is reset in the animation
-      @t_spin = nil
+    # All Clear bonus
+    if @matrix.all?(&:none?)
+      points += 400
+      @clears[:all_clear] += 1
+      delay(30) { play_sound_effect "score/all_clear" }
     end
+
+    # Process back-to-back bonus. A single, double, or triple
+    # line clear will end a back-to-back streak
+    if @t_spin || lines_cleared == 4
+      points *= 1.5 if @back_to_back > 0
+      @back_to_back += 1
+
+      if @back_to_back > @highest_streak
+        @highest_streak = @back_to_back
+        @new_best_set = true
+      end
+    else
+      @back_to_back = 0
+      @new_best_set = false
+    end
+
+    @score += (points * @level).floor
+
+    lines_rewarded = (points / 100).floor
+    @lines += lines_rewarded
+    @lines_needed -= lines_rewarded
+
+    check_level
+
+    # Note that lines_cleared was never directly added to @lines,
+    # instead being processed along with the score. We do need to save some
+    # more data before we get rid of it:
+    @actual_lines_cleared += lines_cleared
+
+    # This is saved so that lines cleared from T-Spins don't hurt TRT
+    @t_spin_lines_cleared += lines_cleared if @t_spin
+
+    if lines_cleared < 4 && !@t_spin
+      @burnt_lines += lines_cleared
+    end
+
+    # Reset this for next frame; @lines_cleared_this_frame is reset in the animation
+    @t_spin = nil
+  end
+
+  def tetris_scored?
+    @lines_cleared_this_frame.size == 4
   end
 
   # It starts at 5 lines to increment to level 2, then 10 more lines to increment

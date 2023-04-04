@@ -4,7 +4,7 @@ class TetrisGame
 
     render_grid_lines
 
-    render_matrix @matrix unless animating? :line_fall
+    render_matrix @matrix unless animating? :line_clear, :line_fall
     render_closed_shutters if @game_over
 
     if @current_tetromino
@@ -97,9 +97,7 @@ class TetrisGame
   # @option :border [Boolean] whether or not to display a black border
   #   (you can also pass in an array of 3-4 integers to specify a color)
   def render_mino(matrix_x, matrix_y, r, g, b, a=255,
-                  size: MINO_SIZE, x_translate: 0, y_translate: 0, border: true)
-    border = GRID_COLOR if border == true
-
+                  size: MINO_SIZE, x_translate: 0, y_translate: 0, border: GRID_COLOR)
     x, y = mino_px_position matrix_x, matrix_y, size: size
 
     @args.outputs.primitives << {
@@ -144,7 +142,7 @@ class TetrisGame
     end
   end
 
-  def render_tetromino(tetromino, x_translate: 0, y_translate: 0, border: true)
+  def render_tetromino(tetromino, x_translate: 0, y_translate: 0, border: GRID_COLOR)
     tetromino.each_with_coords do |mino, x, y|
       if mino && y < MATRIX_HEIGHT + 1
         render_mino x, y, *tetromino.color, x_translate: x_translate,
@@ -183,7 +181,7 @@ class TetrisGame
 
     next_up.each_with_coords(12 + o_push, 16 + o_push) do |mino, x, y|
       if mino
-        render_mino x, y, *next_up.color,
+        render_mino x, y, *next_up.color, border: [0, 0, 0],
                     x_translate: 12 + three_wide_push, y_translate: 9 + i_push
       end
     end
@@ -196,7 +194,7 @@ class TetrisGame
 
       tetromino.each_with_coords(13 + o_push, (11 + o_push) - (3 * i)) do |mino, x, y|
         if mino
-          render_mino x, y, *tetromino.color, size: QUEUE_MINO_SIZE,
+          render_mino x, y, *tetromino.color, size: QUEUE_MINO_SIZE, border: [0, 0, 0],
                       x_translate: 4 + three_wide_push, y_translate: 10 + i_push
         end
       end
@@ -216,7 +214,7 @@ class TetrisGame
     @held_tetromino.each_with_coords(-6 + o_push, 16 + o_push) do |mino, x, y|
       if mino
         render_mino x, y, *@held_tetromino.color, @hold_available ? 255 : UNAVAILABLE_HOLD_ALPHA,
-                    x_translate: -16 + three_wide_push, y_translate: 9 + i_push
+                    x_translate: -16 + three_wide_push, y_translate: 9 + i_push, border: [0, 0, 0]
       end
     end
   end
@@ -280,9 +278,18 @@ class TetrisGame
   def render_metrics
     @args.outputs.labels << "Metrics".label(1170, 575, size: 4, alignment: :center)
 
-    @args.outputs.labels << METRICS.map do |metric|
+    metrics_labels = METRICS.map do |metric|
       value = @metrics[metric]
       "#{metric.to_s.split('_').map(&:capitalize).join ' '}: #{value.is_a?(Float) ? '%0.01f' % value : value}"
     end.span_vertically(1090, 530, 40, size: 0.25)
+
+    # Drought
+    metrics_labels[6][:a] = @drought && !@drought_paused ? 255 : 100
+    # Pause
+    metrics_labels[7][:a] = @drought_paused ? 255 : 100
+    # Surplus/Readiness
+    (8..9).each { |i| metrics_labels[i][:a] = @tetris_ready ? 255 : 100 }
+
+    @args.outputs.labels << metrics_labels
   end
 end
