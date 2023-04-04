@@ -26,6 +26,11 @@ class TetrisGame
         @matrix[x][y] = @current_tetromino.color if mino
       end
 
+      check_line_clear
+      handle_scoring
+
+      run_drop_metrics
+
       @current_tetromino = nil
     end
   end
@@ -83,10 +88,8 @@ class TetrisGame
     # If the mini conditions are met with a kick test of 5, however, it counts as a full
     if (t_spin_condition || (mini_t_spin_condition && @current_tetromino.last_movement == 5))
       @t_spin = :full
-      @t_spins_scored += 1
     elsif mini_t_spin_condition
       @t_spin = :mini
-      @mini_t_spins_scored += 1
     end
   end
 end

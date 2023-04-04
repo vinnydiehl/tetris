@@ -168,7 +168,7 @@ class Tetromino
   def clone
     copy = self.class.new({
       shape: @shape,
-      minos: @minos.map(&:clone),
+      minos: @minos.deep_dup,
       color: @color.clone
     })
 
@@ -193,7 +193,6 @@ class TetrisGame
     if !tetromino && @bag.size < 8
       # Use this for debugging; change the index to get only that shape
       # @bag.concat ([SHAPES[0]] * 7).map { |s| Tetromino.new s }.shuffle
-
       @bag.concat SHAPES.map { |s| Tetromino.new s }.shuffle
     end
 
@@ -210,6 +209,11 @@ class TetrisGame
 
       reset_gravity_delay GRAVITY_VALUES[@level]
       @hold_available = true
+
+      @metrics[:presses] = 0
+      if @current_tetromino.shape == :i && @drought && !@drought_paused
+        start_drought spawn_reset: true
+      end
     end
 
     @spawning = false
