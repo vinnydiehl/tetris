@@ -115,7 +115,7 @@ class TetrisGame
       @metrics_totals[:droughts] -= 1
     end
 
-    # See the flowchart in `docs/` for a visual of the logic in this block
+    # See the flowchart in `docs/metrics.md` for a visual of the logic in this block
     if @drought
       if @drought_paused
         if @tetris_ready
