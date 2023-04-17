@@ -2,7 +2,7 @@ class String
   # Creates a label primitive with the given options.
   #
   # @param x [Integer] x-coordinate in pixels
-  # @param x [Integer] y-coordinate in pixels
+  # @param y [Integer] y-coordinate in pixels
   #
   # @option :size [Integer] the size of the text
   # @option :alignment [Symbol] :left, :center, or :right
